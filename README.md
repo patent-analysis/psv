@@ -1,2 +1,2 @@
 # psv
-Patent Scope Visualization
+Patent Scope Visualization Frontend And HTTP API
