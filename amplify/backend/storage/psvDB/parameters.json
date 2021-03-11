@@ -1,5 +1,0 @@
-{
-    "tableName": "Patents",
-    "partitionKeyName": "patentNumber",
-    "partitionKeyType": "S"
-}
