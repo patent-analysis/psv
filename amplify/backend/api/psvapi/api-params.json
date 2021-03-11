@@ -1,0 +1,35 @@
+{
+    "paths": [
+        {
+            "name": "/upload",
+            "lambdaFunction": "uploadpatent",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/upload"
+        }
+    ],
+    "resourceName": "psvapi",
+    "apiName": "psvapi",
+    "functionArns": [
+        {
+            "lambdaFunction": "uploadpatent"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-psv-dev-185134-authRole",
+        "unAuthRoleName": "amplify-psv-dev-185134-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "uploadpatent",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
