@@ -1,0 +1,13 @@
+.search-container {
+    margin-top: 10%;
+}
+
+.search-container__input {
+    margin-bottom: 5%;
+    width: 40%;
+}
+
+.search-container__dropdown {
+    margin-bottom: 5%;
+    width: 40%;
+}
