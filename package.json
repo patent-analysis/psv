@@ -24,8 +24,14 @@
   },
   "eslintConfig": {
     "rules": {
-      "indent": ["error", 4],
-      "quotes": ["error", "single"]
+      "indent": [
+        "warn",
+        4
+      ],
+      "quotes": [
+        "warn",
+        "single"
+      ]
     },
     "extends": [
       "react-app",
