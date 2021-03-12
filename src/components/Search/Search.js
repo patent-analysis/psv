@@ -1,5 +1,6 @@
 import { Form, Input, Button, Dropdown, Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
+import StringManager from '../../utils/StringManager';
 import './Search.css';
 
 function handleMenuClick(e) {
@@ -38,7 +39,7 @@ const Search = () => {
       onFinishFailed={onFinishFailed}
     >
       <Form.Item
-        label="Antibody Sequence"
+        label={StringManager.get('selectEpitope')}
         name="sequence"
         className="search-container__input"
         rules={[{ required: false }]}
@@ -48,12 +49,12 @@ const Search = () => {
 
       <Dropdown overlay={menu}>
         <Button className="search-container__dropdown">
-            Select Protein <DownOutlined />
+        {StringManager.get('selectProtein')} <DownOutlined />
         </Button>
         </Dropdown>
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          Submit
+        {StringManager.get('submit')}
         </Button>
       </Form.Item>
     </Form>

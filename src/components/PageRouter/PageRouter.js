@@ -1,7 +1,7 @@
 import Search from '../Search/Search';
 import PatentUpload from '../PatentUpload/PatentUpload';
 import { Switch, Route } from "react-router-dom";
-const Router = () => (
+const PageRouter = () => (
     <Switch>
     <Route exact path="/">
       <Search />
@@ -14,4 +14,4 @@ const Router = () => (
     </Route>
   </Switch>
 );
-export default Router; 
+export default PageRouter; 

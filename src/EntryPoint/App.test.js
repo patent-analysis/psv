@@ -1,8 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
+import StringManager from '../utils/StringManager';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+describe('App', () => {
+  test('it shows a footer with our app and team description', () => {
+    render(<App />);
+    const link = screen.getByText(StringManager.get('appOwnershipFooter'));
+    expect(link).toBeInTheDocument();
+  });
 });
