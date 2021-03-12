@@ -23,6 +23,10 @@
     "prepare": "husky install"
   },
   "eslintConfig": {
+    "rules": {
+      "indent": ["error", 4],
+      "quotes": ["error", "single"]
+    },
     "extends": [
       "react-app",
       "react-app/jest"

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import StringManager from '../../utils/StringManager';
 const { Header } = Layout;

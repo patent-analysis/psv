@@ -7,15 +7,15 @@ import StringManager from '../utils/StringManager';
 const { Content, Footer } = Layout;
 
 function App() {
-  return (
-    <Layout className="layout">
-      <HeaderMenu />
-      <Content style={{ padding: '0 50px' }}>
-        <PageRouter />
-      </Content>
-      <Footer style={{ textAlign: 'center' }}>{StringManager.get('appOwnershipFooter')}</Footer>
-    </Layout>
-  );
+    return (
+        <Layout className="layout">
+            <HeaderMenu />
+            <Content style={{ padding: '0 50px' }}>
+                <PageRouter />
+            </Content>
+            <Footer style={{ textAlign: 'center' }}>{StringManager.get('appOwnershipFooter')}</Footer>
+        </Layout>
+    );
 }
 
 export default App;
