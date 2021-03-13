@@ -1,25 +1,18 @@
-import { Form, Input, Button, Dropdown, Menu } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Form, Input, Button, AutoComplete } from 'antd';
 import StringManager from '../../utils/StringManager';
 import './Search.css';
 
-function handleMenuClick(e) {
-    console.log('click', e);
-}
-
-const menu = (
-    <Menu onClick={handleMenuClick}>
-        <Menu.Item key="1">
-        PCSK9
-        </Menu.Item>
-        <Menu.Item key="2">
-        COVID-19
-        </Menu.Item>
-        <Menu.Item key="3">
-        WHEY
-        </Menu.Item>
-    </Menu>
-);
+const options = [
+    {
+        value: 'PCSK9',
+    },
+    {
+        value: 'COVID-19',
+    },
+    {
+        value: 'WHEY',
+    },
+];
 
 const Search = () => {
     const onFinish = (values) => {
@@ -46,12 +39,16 @@ const Search = () => {
             >
                 <Input />
             </Form.Item>
-
-            <Dropdown overlay={menu}>
-                <Button className="search-container__dropdown">
-                    {StringManager.get('selectProtein')} <DownOutlined />
-                </Button>
-            </Dropdown>
+            <Form.Item
+                className="search-container__searchbox"
+                label={StringManager.get('selectProtein')}
+            >
+                <AutoComplete
+                    options={options}
+                    placeholder={StringManager.get('selectProtein')}
+                    filterOption={(inputValue, option) => option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
+                />
+            </Form.Item>
             <Form.Item>
                 <Button type="primary" htmlType="submit">
                     {StringManager.get('submit')}
