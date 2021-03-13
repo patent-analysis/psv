@@ -19,9 +19,20 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prepare": "husky install"
   },
   "eslintConfig": {
+    "rules": {
+      "indent": [
+        "warn",
+        4
+      ],
+      "quotes": [
+        "warn",
+        "single"
+      ]
+    },
     "extends": [
       "react-app",
       "react-app/jest"
@@ -39,5 +50,7 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "husky": "^5.1.3"
+  }
 }

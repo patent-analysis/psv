@@ -1,12 +1,12 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import Search from './Search';
+import PageRouter from './PageRouter';
 
-describe('Search', () => {
+describe('PageRouter', () => {
     test('does not crash', () => {
         render(
             <Router>
-                <Search/>    
+                <PageRouter/>    
             </Router>
         );
     });
