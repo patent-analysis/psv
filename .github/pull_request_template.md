@@ -1,0 +1,23 @@
+#### JIRA LINK ####
+
+- Please include JIRA ticket link here if any
+
+#### CHANGES ####
+
+- Please list the relevant changes in the PR
+
+
+
+#### DETAILS ####
+
+- Any relevant details/references based on this changes
+
+
+
+
+
+#### MANDATORY PR ####
+
+PR will **NOT** be aproved if no GIF is included 😄
+Include small/social giphy inside the parens **()** https://giphy.com/
+![]()
