@@ -16,7 +16,7 @@
 
 
 
-#### MANDATORY PR ####
+#### MANDATORY GIF ####
 
 PR will **NOT** be aproved if no GIF is included 😄
 Include small/social giphy inside the parens **()** https://giphy.com/
