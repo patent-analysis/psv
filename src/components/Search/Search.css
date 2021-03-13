@@ -3,11 +3,10 @@
 }
 
 .search-container__input {
-    margin-bottom: 5%;
     width: 40%;
 }
 
-.search-container__dropdown {
+.search-container__searchbox {
     margin-bottom: 5%;
     width: 40%;
 }
