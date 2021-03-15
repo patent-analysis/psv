@@ -1,0 +1,23 @@
+.protein-container {
+    margin: auto;
+}
+
+.protein-container_input {
+    margin: auto;
+    width: 30%;
+}
+
+.upload-container_input {
+    margin-top: 25px;
+}
+
+.uploadButton {
+    background-color: #2831ac;
+    border: none;
+    color: rgb(255, 255, 255);
+    padding: 15px 32px;
+    text-align: center;
+    display: inline-block;
+    font-size: 14px;
+    margin-top: 25px;
+}
