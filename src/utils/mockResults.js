@@ -16,7 +16,7 @@ const getRandomPatents = (size) => {
         randomPatents[i] = {
             'Patent Number': randomPatent,
             'Sequence Position': randomResidue,
-            'Asignee': randomAssignee
+            'Assignee': randomAssignee
         }
     }
 

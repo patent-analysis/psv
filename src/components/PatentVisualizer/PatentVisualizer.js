@@ -1,40 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Heatmap } from '@ant-design/charts';
+import { Layout } from 'antd';
+import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import { assignColors } from '../../utils/colors';
-import mock from './mockResults';
+import { getUnique } from '../../utils/utils';
+import mock from '../../utils/mockResults';
 
-/* 
- * Maps an array of objects to a new array of objects where each key has a random color assigned 
-*/
-const defineColorsBy = (data, key) => {
-    const assigneeArray = data.map((elem) => elem[key]);
-    const uniqueAssignees = new Set(assigneeArray);
-    return assignColors(Array.from(uniqueAssignees));
+const KEYS = {
+    assignee: 'Assignee',
+    sequencePosition: 'Sequence Position',
+    patentNumber: 'Patent Number'
 }
+Object.freeze(KEYS);
 
 const PatentVisualizer = () => {
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
+    const _dataRef = useRef([]);
     useEffect(() => {
         asyncFetch();
     }, []);
+
+    // Assignees Effect
+    const [assignees, setAssignees] = useState({});
+    useEffect(() => {
+        setData(_dataRef.current.filter(patentData => {
+            return assignees[patentData[KEYS.assignee]]
+        }))
+    }, [assignees]);
+
     const asyncFetch = () => {
         Promise.resolve(mock)
             .then((response) => {
                 setData(response);
-                setColorKeys(defineColorsBy(response, 'Asignee'));
+                _dataRef.current = response;
+                const uniqueAssignees = getUnique(response, KEYS.assignee);
+                let assigneeFilters = {
+                };
+                uniqueAssignees.forEach((item) => {
+                    assigneeFilters[item] = true;
+                });
+                setAssignees(assigneeFilters);
+                setColorKeys(assignColors(uniqueAssignees));
             })
-            // .then((json) => setData(json))
             .catch((error) => {
                 console.log('fetch data failed', error);
             });
     };
-    var config = {
+    const config = {
         width: 650,
         height: 500,
         autoFit: true,
         data: data,
-        xField: 'Sequence Position',
+        xField: KEYS.sequencePosition,
         axis: {
             grid: {
                 line: {
@@ -47,15 +65,32 @@ const PatentVisualizer = () => {
                 }
             }
         },
-        yField: 'Patent Number',
-        // container: (<div>Hello World</div>),
-        colorField: 'Asignee',
+        yField: KEYS.patentNumber,
+        colorField: KEYS.assignee,
         color: (assignee) => {
             return colorKeys[assignee];
         },
-        meta: { 'Sequence Position': { type: 'cat' } },
+        showContent: true,
+        meta: { [KEYS.sequencePosition] : { type: 'cat' } },
     };
-    return <Heatmap {...config} />;
+    
+    const onEvent = (chart, event) => {
+        // TODO
+    }
+    const onAssigneeFilterChange = (e, name) => {
+        setAssignees({
+            ...assignees,
+            [name]: e.target.checked
+        });
+    }
+    return (
+        <Layout>
+            <PatentVisualizerSidebar assignees={assignees} onAssigneeFilterChange={onAssigneeFilterChange} />
+            <Layout style={{ padding: '24px' }}>
+                <Heatmap onEvent={onEvent} {...config} />
+            </Layout>
+        </Layout>
+    )
 };
 
 export default PatentVisualizer;
