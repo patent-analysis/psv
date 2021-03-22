@@ -1,4 +1,5 @@
 import { Layout, Menu, Checkbox } from 'antd';
+import 'antd/dist/antd.css';
 import { UserOutlined } from '@ant-design/icons';
 import StringManager from '../../utils/StringManager';
 const { SubMenu } = Menu;

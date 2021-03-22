@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
+import 'antd/dist/antd.css';
+import './PatentVisualizer.css';
+import { CloseOutlined } from '@ant-design/icons';
 import { Heatmap } from '@ant-design/charts';
-import { Layout } from 'antd';
+import { Layout, Button } from 'antd';
 import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
 import mock from '../../utils/mockResults';
+const { Sider } = Layout;
 
 const KEYS = {
     assignee: 'Assignee',
@@ -16,6 +20,7 @@ Object.freeze(KEYS);
 const PatentVisualizer = () => {
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
+    const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
     const _dataRef = useRef([]);
     useEffect(() => {
         asyncFetch();
@@ -75,7 +80,15 @@ const PatentVisualizer = () => {
     };
     
     const onEvent = (chart, event) => {
-        // TODO
+        // If event.data is not available user clicked on empty tile of heatmap
+        if(event.type === 'click' && event.data) {
+            setDetails({
+                show: true,
+                patentId: event.data.data[KEYS.patentNumber],
+                assignee: event.data.data[KEYS.assignee],
+                seqPosition: event.data.data[KEYS.sequencePosition]
+            });
+        }
     }
     const onAssigneeFilterChange = (e, name) => {
         setAssignees({
@@ -89,6 +102,22 @@ const PatentVisualizer = () => {
             <Layout style={{ padding: '24px' }}>
                 <Heatmap onEvent={onEvent} {...config} />
             </Layout>
+            {details.show && 
+                <Sider className="site-layout-background" theme="light" width={200} style={{ padding: '20px' }}>
+                    <CloseOutlined className="visualizer__details-sider-icon" 
+                        onClick={() => setDetails({ ...details, show: false })}
+                    />
+                    <div>Patent Name: {details.patentId}</div>
+                    <div>Sequence Index - Name: {details.seqPosition}</div>
+                    <div>Assignee: {details.assignee}</div>
+                    <div>Other relevant data: </div>
+                    <div>Link to PDF</div>
+                    <div>Text extracted</div>
+                    <div className="visualizer__edit-button-container">
+                        <Button type="primary">Edit Data</Button>
+                    </div>
+                </Sider>
+            }
         </Layout>
     )
 };
