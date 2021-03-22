@@ -14,7 +14,7 @@ const HeaderMenu = () => (
             <Menu.Item key="2">
                 <Link to="/search">{StringManager.get('search')}</Link>
             </Menu.Item>
-            <Menu.Item key="4">
+            <Menu.Item key="3">
                 <AmplifySignOut />
             </Menu.Item>
         </Menu>
