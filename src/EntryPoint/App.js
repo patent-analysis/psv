@@ -4,6 +4,7 @@ import PageRouter from '../components/PageRouter/PageRouter';
 import HeaderMenu from '../components/HeaderMenu/HeaderMenu';
 import { Layout } from 'antd';
 import StringManager from '../utils/StringManager';
+import { withAuthenticator } from '@aws-amplify/ui-react';
 const { Content, Footer } = Layout;
 
 function App() {
@@ -18,4 +19,7 @@ function App() {
     );
 }
 
-export default App;
+export default withAuthenticator(App, { 
+    // Render a sign out button once logged in
+    includeGreetings: true
+});

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import StringManager from '../../utils/StringManager';
+import { AmplifySignOut } from '@aws-amplify/ui-react';
 const { Header } = Layout;
 
 const HeaderMenu = () => (
@@ -12,6 +13,9 @@ const HeaderMenu = () => (
             </Menu.Item>
             <Menu.Item key="2">
                 <Link to="/search">{StringManager.get('search')}</Link>
+            </Menu.Item>
+            <Menu.Item key="3">
+                <AmplifySignOut />
             </Menu.Item>
         </Menu>
     </Header>
