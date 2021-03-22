@@ -1,6 +1,7 @@
 import { Form, Input, Button, AutoComplete } from 'antd';
 import StringManager from '../../utils/StringManager';
 import './Search.css';
+import { useHistory } from 'react-router-dom';
 
 const options = [
     {
@@ -15,7 +16,9 @@ const options = [
 ];
 
 const Search = () => {
+    let history = useHistory();
     const onFinish = (values) => {
+        history.push('/results');
         console.log('Success:', values);
     };
 
@@ -41,6 +44,7 @@ const Search = () => {
             </Form.Item>
             <Form.Item
                 className="search-container__searchbox"
+                name="protein"
                 label={StringManager.get('selectProtein')}
             >
                 <AutoComplete

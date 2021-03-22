@@ -4,7 +4,8 @@ const strings = {
     uploadPatents: 'Upload Patents',
     selectEpitope: 'Select Epitope Sequence',
     selectProtein: 'Select Protein',
-    appOwnershipFooter: 'Patent Visualization App - Created by The Avengers'
+    appOwnershipFooter: 'Patent Visualization App - Created by The Avengers',
+    filterByAssignee: 'Filter By Assignee'
 }
 
 export default Object.freeze(strings);

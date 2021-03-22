@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/charts": "^1.0.21",
     "@aws-amplify/ui-react": "^1.0.4",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
@@ -31,11 +32,16 @@
       "quotes": [
         "warn",
         "single"
-      ]
+      ],
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn"
     },
     "extends": [
       "react-app",
       "react-app/jest"
+    ],
+    "plugins": [
+      "eslint-plugin-react-hooks"
     ]
   },
   "browserslist": {
@@ -51,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^5.1.3"
   }
 }

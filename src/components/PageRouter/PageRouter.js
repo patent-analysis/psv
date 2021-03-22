@@ -1,5 +1,6 @@
 import Search from '../Search/Search';
 import PatentUpload from '../PatentUpload/PatentUpload';
+import PatentVisualizer from '../PatentVisualizer/PatentVisualizer';
 import { Switch, Route } from 'react-router-dom';
 const PageRouter = () => (
     <Switch>
@@ -11,6 +12,9 @@ const PageRouter = () => (
         </Route>
         <Route path="/search">
             <Search />
+        </Route>
+        <Route path="/results">
+            <PatentVisualizer />
         </Route>
     </Switch>
 );
