@@ -5,6 +5,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { Heatmap } from '@ant-design/charts';
 import { Layout, Button } from 'antd';
 import PatentVisualizerSidebar from './PatentVisualizerSidebar';
+import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
 import mock from '../../utils/mockResults';
@@ -97,12 +98,13 @@ const PatentVisualizer = () => {
         });
     }
     return (
-        <Layout>
-            <PatentVisualizerSidebar assignees={assignees} onAssigneeFilterChange={onAssigneeFilterChange} />
-            <Layout style={{ padding: '24px' }}>
-                <Heatmap onEvent={onEvent} {...config} />
-            </Layout>
-            {details.show && 
+        [
+            <Layout>
+                <PatentVisualizerSidebar assignees={assignees} onAssigneeFilterChange={onAssigneeFilterChange} />
+                <Layout style={{ padding: '24px' }}>
+                    <Heatmap onEvent={onEvent} {...config} />
+                </Layout>
+                {details.show && 
                 <Sider className="site-layout-background" theme="light" width={200} style={{ padding: '20px' }}>
                     <CloseOutlined className="visualizer__details-sider-icon" 
                         onClick={() => setDetails({ ...details, show: false })}
@@ -117,8 +119,10 @@ const PatentVisualizer = () => {
                         <Button type="primary">Edit Data</Button>
                     </div>
                 </Sider>
-            }
-        </Layout>
+                }
+            </Layout>,
+            <PatentTable />
+        ]
     )
 };
 
