@@ -7,14 +7,14 @@ const { Header } = Layout;
 const HeaderMenu = () => (
     <Header>
         <div className="logo" />
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
+        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']} style={{ display: 'flex' }}>
             <Menu.Item key="1">
                 <Link to="/upload">{StringManager.get('uploadPatents')}</Link>
             </Menu.Item>
             <Menu.Item key="2">
                 <Link to="/search">{StringManager.get('search')}</Link>
             </Menu.Item>
-            <Menu.Item key="3">
+            <Menu.Item key="3" style={{ marginLeft: 'auto' }}>
                 <AmplifySignOut />
             </Menu.Item>
         </Menu>
