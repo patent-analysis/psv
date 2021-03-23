@@ -3,7 +3,7 @@ const getRandomPatents = (size) => {
     const assignedIds = {};
     for(let i = 0; i < 500; i++) {
         const patentIds = ['1134992', '1134993', '1134994', '1134995', '1134996', '1134997', '1134998', '2134992', '3134992'];
-        const asignees = ['Pfeizer', 'Amgen Inc', 'Regeneron Pharmaceuticals'];
+        const asignees = ['Pfizer', 'Amgen Inc', 'Regeneron Pharmaceuticals'];
         const randomPatent = patentIds[Math.floor(Math.random() * patentIds.length)];
         const randomResidue = Math.floor(Math.random() * 100) + 1;
         let randomAssignee; 
