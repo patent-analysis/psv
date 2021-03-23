@@ -69,16 +69,14 @@ jobs:
         run: npm ci
         
       - name: run tests 
-        run: npm test
-
-      - name: build the app
-        run: npm run build    
-
-      - name: deploy
+        run: npm test 
+      
+      - name: amplify-deploy
         uses: ambientlight/amplify-cli-action@0.2.1
         with:
           amplify_command: publish
           amplify_env: dev
+          amplify_cli_version: 3.17.1-alpha.35
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
