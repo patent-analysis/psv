@@ -7,6 +7,12 @@
     "bioMoleculesDB": {
       "service": "DynamoDB",
       "providerPlugin": "awscloudformation"
+    },
+    "psvfbaaaa36": {
+      "service": "S3",
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": []
     }
   },
   "function": {
@@ -47,6 +53,11 @@
           }
         }
       ]
+    },
+    "patentUploadsLambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
     }
   },
   "api": {
@@ -71,10 +82,24 @@
           ]
         }
       ]
+    },
+    "patentUploadAPI": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "patentUploadsLambda",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ]
     }
   },
   "auth": {
-    "psv9eb3d258": {
+    "psv670c5d1b": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
