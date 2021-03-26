@@ -18,6 +18,7 @@ if [ -z $(which amplify) ] || [ -n "$8" ] ; then
   npm install -g @aws-amplify/cli@${8}
 else
   echo "using amplify available at PATH"
+fi
 
 which amplify
 
