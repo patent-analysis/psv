@@ -29,11 +29,18 @@ const PatentVisualizer = () => {
 
     // Assignees Effect
     const [assignees, setAssignees] = useState({});
+    const [sequenceRange, setSequenceRange] = useState({ min: 1, max: 100 });
     useEffect(() => {
-        setData(_dataRef.current.filter(patentData => {
-            return assignees[patentData[KEYS.assignee]]
-        }))
-    }, [assignees]);
+        setData(_dataRef.current
+            .filter(patentData => {
+                return assignees[patentData[KEYS.assignee]]
+            })
+            .filter((patentData) => {
+                return sequenceRange.min <= patentData[KEYS.sequencePosition] <= sequenceRange.max;
+            })
+        );
+    }, [assignees, sequenceRange]);
+    
 
     const asyncFetch = () => {
         Promise.resolve(mock)
@@ -100,10 +107,19 @@ const PatentVisualizer = () => {
             [name]: e.target.checked
         });
     }
+
+    const onSequenceRangeFilterChange = (sequenceRange) => {
+        setSequenceRange({
+            ...sequenceRange
+        });
+    }
     return (
         [
             <Layout>
-                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} onAssigneeFilterChange={onAssigneeFilterChange} />
+                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceLength={data.length}
+                    onAssigneeFilterChange={onAssigneeFilterChange} 
+                    onSequenceRangeFilterChange={onSequenceRangeFilterChange}
+                />
                 <Layout style={{ padding: '24px' }}>
                     <Heatmap onEvent={onEvent} {...config} />
                 </Layout>
