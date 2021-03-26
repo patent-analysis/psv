@@ -1,0 +1,29 @@
+label {
+    margin-top: 25px;
+    display:block;
+    font-size: medium;
+    font-weight: 500;
+}
+
+input {
+    margin-bottom: 50px;
+}
+
+button {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    background-color: rgb(16, 155, 241);
+    color: white;
+    cursor: pointer;
+    border-radius: 25px;
+    border:lightskyblue;
+    padding: 10px;
+}
+
+#fileList {
+    border: 1px solid black;
+}
+
+input:invalid {
+    color: red;
+}
