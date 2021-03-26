@@ -53,24 +53,27 @@ const PatentVisualizer = () => {
                 console.log('fetch data failed', error);
             });
     };
+    const gridStyles = { 
+        grid: {
+            line: {
+                style: {
+                    stroke: 'black',
+                    lineWidth: 1,
+                    strokeOpacity: 0.3,
+                    cursor: 'pointer'
+                }
+            }
+        }
+    }
+
     const config = {
         width: 650,
         height: 500,
         autoFit: true,
         data: data,
         xField: KEYS.sequencePosition,
-        axis: {
-            grid: {
-                line: {
-                    style: {
-                        stroke: 'black',
-                        lineWidth: 1,
-                        strokeOpacity: 0.1,
-                        cursor: 'pointer'
-                    }
-                }
-            }
-        },
+        xAxis: gridStyles,
+        yAxis: gridStyles,
         yField: KEYS.patentNumber,
         colorField: KEYS.assignee,
         color: (assignee) => {
@@ -100,7 +103,7 @@ const PatentVisualizer = () => {
     return (
         [
             <Layout>
-                <PatentVisualizerSidebar assignees={assignees} onAssigneeFilterChange={onAssigneeFilterChange} />
+                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} onAssigneeFilterChange={onAssigneeFilterChange} />
                 <Layout style={{ padding: '24px' }}>
                     <Heatmap onEvent={onEvent} {...config} />
                 </Layout>
