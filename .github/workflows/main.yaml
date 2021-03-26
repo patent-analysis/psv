@@ -3,7 +3,7 @@ on:
   push:
       branches: 
         - '*'
-        - '!master'
+        - '!main'
   pull_request:
       types: [opened]
   workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         node-version: [12.x]
-    if: github.base_ref == 'refs/heads/prod'
+    if: ${{ github.ref == 'refs/heads/prod' }}
     needs: build
     environment: AWS_US_EAST_1_1
     steps:
