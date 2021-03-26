@@ -37,5 +37,28 @@
         }
       }
     }
+  },
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-psv-prod-44827-authRole",
+      "UnauthRoleArn": "arn:aws:iam::147427553671:role/amplify-psv-prod-44827-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::147427553671:role/amplify-psv-prod-44827-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-psv-prod-44827-deployment",
+      "UnauthRoleName": "amplify-psv-prod-44827-unauthRole",
+      "StackName": "amplify-psv-prod-44827",
+      "StackId": "arn:aws:cloudformation:us-east-1:147427553671:stack/amplify-psv-prod-44827/bfc74ad0-8ddd-11eb-96eb-1284a25b9bc9",
+      "AmplifyAppId": "d3nuz0k9umkypw"
+    },
+    "categories": {
+      "auth": {
+        "psv670c5d1b": {}
+      },
+      "function": {
+        "patentsLambda": {},
+        "bioMoleculesLambda": {},
+        "patentUploadsLambda": {}
+      }
+    }
   }
 }
