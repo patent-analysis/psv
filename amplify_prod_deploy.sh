@@ -22,17 +22,34 @@ fi
 
 which amplify
 
+
+REACTCONFIG="{\
+\"SourceDir\":\"src\",\
+\"DistributionDir\":\"build\",\
+\"BuildCommand\":\"npm run-script build\",\
+\"StartCommand\":\"npm run-script start\"\
+}"
 AWSCLOUDFORMATIONCONFIG="{\
 \"configLevel\":\"project\",\
 \"useProfile\":false,\
+\"profileName\":\"default\",\
 \"accessKeyId\":\"$AWS_ACCESS_KEY_ID\",\
 \"secretAccessKey\":\"$AWS_SECRET_ACCESS_KEY\",\
-\"region\":\"$AWS_REGION\"\
+\"region\":\"us-east-1\"\
 }"
-
+AMPLIFY="{\
+\"projectName\":\"psv\",\
+\"defaultEditor\":\"code\"\
+}"
+FRONTEND="{\
+\"frontend\":\"javascript\",\
+\"framework\":\"react\",\
+\"config\":$REACTCONFIG\
+}"
 PROVIDERS="{\
 \"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
 }"
+
 
 echo "amplify version $(amplify --version)"
 echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > ./amplify/.config/local-env-info.json
@@ -45,6 +62,14 @@ else
     echo "prod environment does not exist.. exiting";
     exit 1
 fi
+
+
+amplify configure project \
+--amplify $AMPLIFY \
+--frontend $FRONTEND \
+--providers $PROVIDERS \
+--yes
+
 
 amplify status
 
