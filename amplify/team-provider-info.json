@@ -29,12 +29,6 @@
           "deploymentBucketName": "amplify-psv-dev-10725-deployment",
           "s3Key": "amplify-builds/patentUploadsLambda-75314a796d615073706e-build.zip"
         }
-      },
-      "storage": {
-        "psvfbaaaa36": {
-          "bucketName": "psv-document-storage",
-          "region": "us-east-1"
-        }
       }
     }
   },
