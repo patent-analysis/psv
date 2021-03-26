@@ -15,14 +15,6 @@
     },
     "s3Key": {
       "Type": "String"
-    },
-    "storagepatentsDBName": {
-      "Type": "String",
-      "Default": "storagepatentsDBName"
-    },
-    "storagepatentsDBArn": {
-      "Type": "String",
-      "Default": "storagepatentsDBArn"
     }
   },
   "Conditions": {
@@ -55,12 +47,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "patentsLambda",
+            "patentUploadsLambda",
             {
               "Fn::Join": [
                 "",
                 [
-                  "patentsLambda",
+                  "patentUploadsLambda",
                   "-",
                   {
                     "Ref": "env"
@@ -97,12 +89,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "psvLambdaRole9ad2bd87",
+            "psvLambdaRole375f1f39",
             {
               "Fn::Join": [
                 "",
                 [
-                  "psvLambdaRole9ad2bd87",
+                  "psvLambdaRole375f1f39",
                   "-",
                   {
                     "Ref": "env"
@@ -168,34 +160,6 @@
                   }
                 ]
               }
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "dynamodb:DescribeTable",
-                "dynamodb:GetItem",
-                "dynamodb:Query",
-                "dynamodb:Scan",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem"
-              ],
-              "Resource": [
-                {
-                  "Ref": "storagepatentsDBArn"
-                },
-                {
-                  "Fn::Join": [
-                    "/",
-                    [
-                      {
-                        "Ref": "storagepatentsDBArn"
-                      },
-                      "index/*"
-                    ]
-                  ]
-                }
-              ]
             }
           ]
         }
