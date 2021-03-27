@@ -5,7 +5,10 @@ const strings = {
     selectEpitope: 'Sequence',
     selectProtein: 'Protein Name',
     appOwnershipFooter: 'Patent Visualization App - Created by The Avengers',
-    filterByAssignee: 'Filter By Assignee'
+    filterByAssignee: 'Filter By Assignee',
+    filterBySequencePosition: 'Filter By Sequence Position',
+    minLabel: 'Min:',
+    maxLabel: 'Max:'
 }
 
 export default Object.freeze(strings);
