@@ -40,7 +40,8 @@ AWSCLOUDFORMATIONCONFIG="{\
 }"
 AMPLIFY="{\
 \"projectName\":\"psv\",\
-\"defaultEditor\":\"code\"\
+\"defaultEditor\":\"code\",\
+\"envName\":\"prod\"\
 }"
 FRONTEND="{\
 \"frontend\":\"javascript\",\
@@ -77,7 +78,8 @@ echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > .
 
 amplify env import --name prod  --yes --awsInfo $AWS_CONFIG --config $PROVIDERS 
 
-# amplify status
+amplify status
+
 echo
 echo  "START: amplify init..."
 amplify init --name prod \
