@@ -92,7 +92,7 @@ amplify status
 
 echo
 echo  "START: amplify pull..."
-amplify pull \
+amplify init \
 --amplify $AMPLIFY \
 --providers $PROVIDERS \
 --codegen ${CODEGEN} \
