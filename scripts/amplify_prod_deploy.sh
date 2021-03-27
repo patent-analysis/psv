@@ -82,7 +82,7 @@ echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > .
 # if environment doesn't exist fail explicitly
 if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
     echo "found existing environment prod"
-    amplify env import --name prod  --config $PROVIDER_CONFIG  --awsInfo $AWS_CONFIG
+    amplify env pull --name prod  --config $PROVIDER_CONFIG  --awsInfo $AWS_CONFIG
 else
     echo "prod environment does not exist.. exiting";
     exit 1
@@ -91,14 +91,14 @@ fi
 amplify status
 
 echo
-echo  "START: amplify init..."
-amplify init \
+echo  "START: amplify pull..."
+amplify pull \
 --amplify $AMPLIFY \
 --providers $PROVIDERS \
 --codegen ${CODEGEN} \
 --frontend ${FRONTEND} \
 --yes
-echo -n "END: amplify init."
+echo -n "END: amplify pull."
 
 amplify status
 
