@@ -3,7 +3,7 @@ set -e
 IFS='|'
 echo
 echo "START: building and publishing amplify app..."
-npm install --global --unsafe-perm @aws-amplify/cli@latest
+npm install --global --unsafe-perm @aws-amplify/cli@4.11.0
 
 
 if [ -z "$AWS_ACCESS_KEY_ID" ] && [ -z "$AWS_SECRET_ACCESS_KEY" ] ; then
@@ -16,9 +16,9 @@ if [ -z "$AWS_REGION" ] ; then
   exit 1
 fi
 
-if [ -z $(which amplify) ] || [ -n "$8" ] ; then
+if [ -z $(which amplify) ] ; then
   echo "Installing amplify globaly"
-  npm install -g @aws-amplify/cli@${8}
+  npm install -g @aws-amplify/cli@$4.11.0
 else
   echo "using amplify available at PATH"
 fi
@@ -70,7 +70,8 @@ CODEGEN="{\
 #     echo "prod environment does not exist.. exiting";
 #     exit 1
 # fi
-amplify env list 
+
+amplify env import prod --providers $PROVIDERS  --yes 
 
 # amplify status
 echo
