@@ -67,16 +67,14 @@ echo "amplify version $(amplify --version)"
 echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > ./amplify/.config/local-env-info.json
 
 
-# # if environment doesn't exist fail explicitly
-# if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
-#     echo "found existing environment prod"
-#     amplify env import prod --providers $PROVIDERS  --yes 
-# else
-#     echo "prod environment does not exist.. exiting";
-#     exit 1
-# fi
-
-amplify env import prod --providers $PROVIDERS --yes
+# if environment doesn't exist fail explicitly
+if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
+    echo "found existing environment prod"
+    amplify env import prod --providers $PROVIDERS  --yes 
+else
+    echo "prod environment does not exist.. exiting";
+    exit 1
+fi
 
 amplify status
 
