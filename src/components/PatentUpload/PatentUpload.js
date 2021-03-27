@@ -39,9 +39,11 @@ class PatentUpload extends Component {
                     key: 'public' + '/' + this.upload.files.name
                 }
             this.setState({ response: "Success uploading file!" });
+            alert("Success Uploading File! ");
+            window.location.reload(true);
         })
         .catch(err => {
-            this.setState({ response: `Cannot uploading file: ${err}` });
+            this.setState({ response: `Error uploading file: ${err}` });
         });
       }
     }
