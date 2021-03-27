@@ -91,14 +91,14 @@ fi
 amplify status
 
 echo
-echo  "START: amplify init..."
-amplify init \
+echo  "START: amplify pull..."
+amplify pull \
 --amplify $AMPLIFY \
 --providers $PROVIDERS \
 --codegen ${CODEGEN} \
 --frontend ${FRONTEND} \
 --yes
-echo -n "END: amplify init."
+echo -n "END: amplify pull."
 
 amplify status
 
