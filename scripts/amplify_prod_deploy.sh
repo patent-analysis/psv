@@ -16,15 +16,6 @@ if [ -z "$AWS_REGION" ] ; then
   exit 1
 fi
 
-if [ -z $(which amplify) ] ; then
-  echo "Installing amplify globaly"
-  npm install -g @aws-amplify/cli@$latest
-else
-  echo "using amplify available at PATH"
-fi
-
-which amplify
-
 REACTCONFIG="{\
 \"SourceDir\":\"src\",\
 \"DistributionDir\":\"build\",\
@@ -74,10 +65,16 @@ PROVIDER_CONFIG="{\
 \"awscloudformation\":$AWSCLOUDFORMATION_CONFIG\
 }"
 
-# echo
-echo "amplify version $(amplify --version)"
-echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > ./amplify/.config/local-env-info.json
+if [ -z $(which amplify) ] ; then
+  echo "Installing amplify globaly"
+  npm install -g @aws-amplify/cli@$latest
+else
+  echo "using amplify available at PATH"
+fi
 
+which amplify
+
+echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > ./amplify/.config/local-env-info.json
 
 # if environment doesn't exist fail explicitly
 if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
@@ -91,23 +88,20 @@ fi
 amplify status
 
 echo
-echo  "START: amplify pull..."
+echo  "START: amplify init..."
 amplify init \
 --amplify $AMPLIFY \
 --providers $PROVIDERS \
 --codegen ${CODEGEN} \
 --frontend ${FRONTEND} \
 --yes
-echo -n "END: amplify pull."
+echo -n "END: amplify init."
 
 amplify status
 
 echo
-echo "START: installing the node project dependencies..."
+echo "START: npm install and test..."
 npm ci
-echo "DONE: installing the node project dependencies."
-echo
-echo "START: running the unit tests..."
 npm run test
 
 if [ $? -ne 0 ]; then
@@ -115,7 +109,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo "DONE: running the unit tests."
+echo "END: npm install and test."
 
 echo
 echo "START: amplify prod publish..."
@@ -126,6 +120,6 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo "DONE: amplify prod publish."
+echo "END: amplify prod publish."
 
-echo "DONE: building and publishing amplify app."
+echo "END: building and publishing amplify app."
