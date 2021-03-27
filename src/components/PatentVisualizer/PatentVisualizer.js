@@ -18,6 +18,17 @@ const KEYS = {
 }
 Object.freeze(KEYS);
 
+const getMaximumSeq = (patentArray) => {
+    return patentArray.reduce((max, current) => {
+        const seqPosition = parseInt(current[KEYS.sequencePosition]);
+        if(seqPosition > max) {
+            return seqPosition;
+        } else {
+            return max;
+        }
+    }, 0);
+}
+
 const PatentVisualizer = () => {
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
@@ -27,13 +38,22 @@ const PatentVisualizer = () => {
         asyncFetch();
     }, []);
 
-    // Assignees Effect
+    // Filtering Effect
     const [assignees, setAssignees] = useState({});
+    const [sequenceRange, setSequenceRange] = useState({ min: 1, max: 1, length: 1 });
     useEffect(() => {
-        setData(_dataRef.current.filter(patentData => {
-            return assignees[patentData[KEYS.assignee]]
-        }))
-    }, [assignees]);
+        setData(_dataRef.current
+            // By Assignee
+            .filter(patentData => {
+                return assignees[patentData[KEYS.assignee]]
+            })
+            // By Sequence Range
+            .filter((patentData) => {
+                return sequenceRange.min <= patentData[KEYS.sequencePosition] && patentData[KEYS.sequencePosition] <= sequenceRange.max;
+            })
+        );
+    }, [assignees, sequenceRange]);
+    
 
     const asyncFetch = () => {
         Promise.resolve(mock)
@@ -48,29 +68,34 @@ const PatentVisualizer = () => {
                 });
                 setAssignees(assigneeFilters);
                 setColorKeys(assignColors(uniqueAssignees));
+                const maximumSeq = getMaximumSeq(response);
+                setSequenceRange({ min: 1, max: maximumSeq, length: maximumSeq });
             })
             .catch((error) => {
                 console.log('fetch data failed', error);
             });
     };
+    const gridStyles = { 
+        grid: {
+            line: {
+                style: {
+                    stroke: 'black',
+                    lineWidth: 1,
+                    strokeOpacity: 0.3,
+                    cursor: 'pointer'
+                }
+            }
+        }
+    }
+
     const config = {
         width: 650,
         height: 500,
         autoFit: true,
         data: data,
         xField: KEYS.sequencePosition,
-        axis: {
-            grid: {
-                line: {
-                    style: {
-                        stroke: 'black',
-                        lineWidth: 1,
-                        strokeOpacity: 0.1,
-                        cursor: 'pointer'
-                    }
-                }
-            }
-        },
+        xAxis: gridStyles,
+        yAxis: gridStyles,
         yField: KEYS.patentNumber,
         colorField: KEYS.assignee,
         color: (assignee) => {
@@ -97,10 +122,20 @@ const PatentVisualizer = () => {
             [name]: e.target.checked
         });
     }
+
+    const onSequenceRangeFilterChange = (newRange) => {
+        setSequenceRange({
+            ...sequenceRange,
+            ...newRange
+        });
+    }
     return (
         [
             <Layout>
-                <PatentVisualizerSidebar assignees={assignees} onAssigneeFilterChange={onAssigneeFilterChange} />
+                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length}
+                    onAssigneeFilterChange={onAssigneeFilterChange} 
+                    onSequenceRangeFilterChange={onSequenceRangeFilterChange}
+                />
                 <Layout style={{ padding: '24px' }}>
                     <Heatmap onEvent={onEvent} {...config} />
                 </Layout>
