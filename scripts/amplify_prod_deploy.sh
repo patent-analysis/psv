@@ -1,6 +1,6 @@
 #!/bin/bash
 IFS='|'
-
+echo
 echo "START: building and publishing amplify app..."
 npm install --global --unsafe-perm @aws-amplify/cli@latest
 
@@ -52,7 +52,7 @@ PROVIDERS="{\
 \"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
 }"
 
-
+echo
 echo "amplify version $(amplify --version)"
 echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > ./amplify/.config/local-env-info.json
 
@@ -67,20 +67,22 @@ fi
 
 
 amplify status
+echo
+echo  "START: amplify configure..."
+amplify configure project \
+--amplify $AMPLIFY \
+--frontend $FRONTEND \
+--providers $PROVIDERS \
+--yes
+echo -n "END: amplify configure."
 
-# amplify configure project \
-# --amplify $AMPLIFY \
-# --frontend $FRONTEND \
-# --providers $PROVIDERS \
-# --yes
+amplify status
 
-# amplify status
-
-
+echo
 echo "START: installing the node project dependencies..."
 npm ci
 echo "DONE: installing the node project dependencies."
-
+echo
 echo "START: running the unit tests..."
 npm run test
 
@@ -91,8 +93,7 @@ fi
 
 echo "DONE: running the unit tests."
 
-# REMOVE_ME: LETS DELETE THE THIS RESOURCE BEFORE THE PUBLISH
-
+echo
 echo "START: amplify prod publish..."
 amplify publish prod --yes
 
