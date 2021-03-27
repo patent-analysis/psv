@@ -71,7 +71,7 @@ CODEGEN="{\
 #     exit 1
 # fi
 
-amplify env import prod --providers $PROVIDERS  --yes 
+amplify env import --name prod --providers $PROVIDERS  --yes 
 
 # amplify status
 echo
