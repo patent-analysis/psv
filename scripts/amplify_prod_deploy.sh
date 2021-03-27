@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 IFS='|'
 echo
 echo "START: building and publishing amplify app..."
@@ -32,10 +33,8 @@ REACTCONFIG="{\
 }"
 AWSCLOUDFORMATIONCONFIG="{\
 \"configLevel\":\"project\",\
-\"useProfile\":false,\
+\"useProfile\":true,\
 \"profileName\":\"default\",\
-\"accessKeyId\":\"$AWS_ACCESS_KEY_ID\",\
-\"secretAccessKey\":\"$AWS_SECRET_ACCESS_KEY\",\
 \"region\":\"us-east-1\",\
 \"awsConfigFilePath\":\"~/.aws/config\"\
 }"
@@ -50,6 +49,10 @@ FRONTEND="{\
 }"
 PROVIDERS="{\
 \"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
+}"
+CODEGEN="{\
+\"generateCode\":false,\
+\"generateDocs\":false\
 }"
 
 echo
@@ -68,13 +71,13 @@ fi
 
 amplify status
 echo
-echo  "START: amplify configure..."
-amplify configure project \
+echo  "START: amplify pull..."
+amplify pull \
 --amplify $AMPLIFY \
---frontend $FRONTEND \
 --providers $PROVIDERS \
+--no-override \
 --yes
-echo -n "END: amplify configure."
+echo -n "END: amplify pull."
 
 amplify status
 
