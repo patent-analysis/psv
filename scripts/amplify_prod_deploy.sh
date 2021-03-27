@@ -54,7 +54,11 @@ CODEGEN="{\
 \"generateCode\":false,\
 \"generateDocs\":false\
 }"
-
+AWS_CONFIG="{\
+\"configLevel\":\"project\",\
+\"useProfile\":true,\
+\"profileName\":\"default\"\
+}"
 
 
 # echo
@@ -71,7 +75,7 @@ CODEGEN="{\
 #     exit 1
 # fi
 
-amplify env import --name prod --providers $PROVIDERS  --yes 
+amplify env import --name prod  --yes --awsInfo $AWS_CONFIG --config $PROVIDERS 
 
 # amplify status
 echo
