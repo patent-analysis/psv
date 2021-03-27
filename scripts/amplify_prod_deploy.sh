@@ -1,7 +1,9 @@
 #!/bin/bash
-RUN npm install --global --unsafe-perm @aws-amplify/cli@latest
-
 IFS='|'
+
+echo "START: building and publishing amplify app..."
+npm install --global --unsafe-perm @aws-amplify/cli@latest
+
 
 if [ -z "$AWS_ACCESS_KEY_ID" ] && [ -z "$AWS_SECRET_ACCESS_KEY" ] ; then
   echo "You must provide the action with both AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables in order to deploy"
@@ -22,7 +24,6 @@ fi
 
 which amplify
 
-
 REACTCONFIG="{\
 \"SourceDir\":\"src\",\
 \"DistributionDir\":\"build\",\
@@ -35,7 +36,8 @@ AWSCLOUDFORMATIONCONFIG="{\
 \"profileName\":\"default\",\
 \"accessKeyId\":\"$AWS_ACCESS_KEY_ID\",\
 \"secretAccessKey\":\"$AWS_SECRET_ACCESS_KEY\",\
-\"region\":\"us-east-1\"\
+\"region\":\"us-east-1\",\
+\"awsConfigFilePath\":\"~/.aws/config\"\
 }"
 AMPLIFY="{\
 \"projectName\":\"psv\",\
@@ -64,21 +66,41 @@ else
 fi
 
 
-amplify configure project \
---amplify $AMPLIFY \
---frontend $FRONTEND \
---providers $PROVIDERS \
---yes
-
-
 amplify status
 
-npm ci
+# amplify configure project \
+# --amplify $AMPLIFY \
+# --frontend $FRONTEND \
+# --providers $PROVIDERS \
+# --yes
 
+# amplify status
+
+
+echo "START: installing the node project dependencies..."
+npm ci
+echo "DONE: installing the node project dependencies."
+
+echo "START: running the unit tests..."
 npm run test
+
+if [ $? -ne 0 ]; then
+  echo "unit tests failed, aborting ..."
+  exit 1
+fi
+
+echo "DONE: running the unit tests."
 
 # REMOVE_ME: LETS DELETE THE THIS RESOURCE BEFORE THE PUBLISH
 
+echo "START: amplify prod publish..."
 amplify publish prod --yes
 
-echo "done"
+if [ $? -ne 0 ]; then
+  echo "amplify publish failed, aboring..."
+  exit 1
+fi
+
+echo "DONE: amplify prod publish."
+
+echo "DONE: building and publishing amplify app."
