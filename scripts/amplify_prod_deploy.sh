@@ -3,7 +3,7 @@ set -e
 IFS='|'
 echo
 echo "START: building and publishing amplify app..."
-npm install --global --unsafe-perm @aws-amplify/cli@4.13.4
+npm install --global --unsafe-perm @aws-amplify/cli@latest
 
 
 if [ -z "$AWS_ACCESS_KEY_ID" ] && [ -z "$AWS_SECRET_ACCESS_KEY" ] ; then
@@ -18,7 +18,7 @@ fi
 
 if [ -z $(which amplify) ] ; then
   echo "Installing amplify globaly"
-  npm install -g @aws-amplify/cli@$4.13.4
+  npm install -g @aws-amplify/cli@$latest
 else
   echo "using amplify available at PATH"
 fi
@@ -40,7 +40,8 @@ AWSCLOUDFORMATIONCONFIG="{\
 }"
 AMPLIFY="{\
 \"projectName\":\"psv\",\
-\"defaultEditor\":\"code\"\
+\"defaultEditor\":\"code\",\
+\"envName\":\"prod\"\
 }"
 FRONTEND="{\
 \"frontend\":\"javascript\",\
@@ -66,21 +67,20 @@ echo "amplify version $(amplify --version)"
 echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > ./amplify/.config/local-env-info.json
 
 
-# # if environment doesn't exist fail explicitly
-# if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
-#     echo "found existing environment prod"
-#     amplify env import prod --providers $PROVIDERS  --yes 
-# else
-#     echo "prod environment does not exist.. exiting";
-#     exit 1
-# fi
+# if environment doesn't exist fail explicitly
+if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
+    echo "found existing environment prod"
+    amplify env import prod --providers $PROVIDERS  --yes 
+else
+    echo "prod environment does not exist.. exiting";
+    exit 1
+fi
 
-amplify env import --name prod  --yes --awsInfo $AWS_CONFIG --config $PROVIDERS 
+amplify status
 
-# amplify status
 echo
 echo  "START: amplify init..."
-amplify init --name prod \
+amplify init \
 --amplify $AMPLIFY \
 --providers $PROVIDERS \
 --codegen ${CODEGEN} \
