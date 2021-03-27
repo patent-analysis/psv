@@ -25,6 +25,7 @@ const Search = () => {
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
+    console.log('DEPLOY TEST LOG, FEEL FREE TO REMOVE ME')
 
     return (
         <Form
