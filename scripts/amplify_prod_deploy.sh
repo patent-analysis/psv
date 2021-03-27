@@ -16,15 +16,6 @@ if [ -z "$AWS_REGION" ] ; then
   exit 1
 fi
 
-if [ -z $(which amplify) ] ; then
-  echo "Installing amplify globaly"
-  npm install -g @aws-amplify/cli@$latest
-else
-  echo "using amplify available at PATH"
-fi
-
-which amplify
-
 REACTCONFIG="{\
 \"SourceDir\":\"src\",\
 \"DistributionDir\":\"build\",\
@@ -60,17 +51,35 @@ AWS_CONFIG="{\
 \"useProfile\":true,\
 \"profileName\":\"default\"\
 }"
+AWSCLOUDFORMATION_CONFIG="{\
+\"Region\": \"us-east-1\",\
+\"DeploymentBucketName\": \"amplify-psv-prod-44827-deployment\",\
+\"UnauthRoleName\": \"amplify-psv-prod-44827-unauthRole\",\
+\"StackName\": \"amplify-psv-prod-44827\",\
+\"StackId\": \"arn:aws:cloudformation:us-east-1:147427553671:stack/amplify-psv-prod-44827/bfc74ad0-8ddd-11eb-96eb-1284a25b9bc9\",\
+\"AuthRoleName\": \"amplify-psv-dev-10725-authRole\",\
+\"UnauthRoleArn\": \"arn:aws:iam::147427553671:role/amplify-psv-prod-44827-unauthRole\",\
+\"AuthRoleArn\": \"arn:aws:iam::147427553671:role/amplify-psv-prod-44827-authRole\"\
+}"
+PROVIDER_CONFIG="{\
+\"awscloudformation\":$AWSCLOUDFORMATION_CONFIG\
+}"
 
+if [ -z $(which amplify) ] ; then
+  echo "Installing amplify globaly"
+  npm install -g @aws-amplify/cli@$latest
+else
+  echo "using amplify available at PATH"
+fi
 
-# echo
-echo "amplify version $(amplify --version)"
+which amplify
+
 echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > ./amplify/.config/local-env-info.json
-
 
 # if environment doesn't exist fail explicitly
 if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
     echo "found existing environment prod"
-    amplify env import prod --providers $PROVIDERS  --yes 
+    amplify env pull --name prod  --config $PROVIDER_CONFIG  --awsInfo $AWS_CONFIG --yes
 else
     echo "prod environment does not exist.. exiting";
     exit 1
@@ -91,11 +100,8 @@ echo -n "END: amplify init."
 amplify status
 
 echo
-echo "START: installing the node project dependencies..."
+echo "START: npm install and test..."
 npm ci
-echo "DONE: installing the node project dependencies."
-echo
-echo "START: running the unit tests..."
 npm run test
 
 if [ $? -ne 0 ]; then
@@ -103,7 +109,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo "DONE: running the unit tests."
+echo "END: npm install and test."
 
 echo
 echo "START: amplify prod publish..."
@@ -114,6 +120,6 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo "DONE: amplify prod publish."
+echo "END: amplify prod publish."
 
-echo "DONE: building and publishing amplify app."
+echo "END: building and publishing amplify app."
