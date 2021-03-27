@@ -76,7 +76,7 @@ echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > .
 #     exit 1
 # fi
 
-amplify env import --name prod  --yes --awsInfo $AWS_CONFIG --config $PROVIDERS  --providers $PROVIDERS
+amplify env import prod --providers $PROVIDERS --yes
 
 amplify status
 
