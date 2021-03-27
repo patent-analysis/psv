@@ -79,6 +79,7 @@ amplify init \
 --amplify $AMPLIFY \
 --providers $PROVIDERS \
 --codegen ${CODEGEN} \
+--frontend ${FRONTEND} \
 --yes
 echo -n "END: amplify init."
 
