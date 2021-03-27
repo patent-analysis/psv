@@ -55,29 +55,32 @@ CODEGEN="{\
 \"generateDocs\":false\
 }"
 
+
+
+# echo
+# echo "amplify version $(amplify --version)"
+# echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > ./amplify/.config/local-env-info.json
+
+
+# # if environment doesn't exist fail explicitly
+# if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
+#     echo "found existing environment prod"
+#     amplify env import prod --providers $PROVIDERS  --yes 
+# else
+#     echo "prod environment does not exist.. exiting";
+#     exit 1
+# fi
+amplify env list 
+
+# amplify status
 echo
-echo "amplify version $(amplify --version)"
-echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > ./amplify/.config/local-env-info.json
-
-# if environment doesn't exist fail explicitly
-if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
-    echo "found existing environment prod"
-    amplify env pull --yes prod --providers $PROVIDERS
-else
-    echo "prod environment does not exist.. exiting";
-    exit 1
-fi
-
-
-amplify status
-echo
-echo  "START: amplify pull..."
-amplify pull \
+echo  "START: amplify init..."
+amplify init \
 --amplify $AMPLIFY \
 --providers $PROVIDERS \
---no-override \
+--codegen ${CODEGEN} \
 --yes
-echo -n "END: amplify pull."
+echo -n "END: amplify init."
 
 amplify status
 
@@ -98,7 +101,7 @@ echo "DONE: running the unit tests."
 
 echo
 echo "START: amplify prod publish..."
-amplify publish prod --yes
+amplify publish prod --yes --invalidateCloudFront --codegen ${CODEGEN}
 
 if [ $? -ne 0 ]; then
   echo "amplify publish failed, aboring..."
