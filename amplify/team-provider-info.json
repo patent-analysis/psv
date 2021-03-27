@@ -13,7 +13,6 @@
     },
     "categories": {
       "auth": {
-        "psv9eb3d258": {},
         "psv670c5d1b": {}
       },
       "function": {
@@ -31,7 +30,7 @@
         }
       },
       "storage": {
-        "psvfbaaaa36": {
+        "psvbf0e1a08": {
           "bucketName": "psv-document-storage",
           "region": "us-east-1"
         }

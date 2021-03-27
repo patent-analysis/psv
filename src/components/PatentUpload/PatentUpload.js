@@ -31,8 +31,7 @@ class PatentUpload extends Component {
     for (var i =0; i < input.files.length; i++) {
         Storage.put(`${document.getElementById('protein').value}/${input.files.item(i).name}`,
                     this.upload.files,
-                    { contentType: input.files.item(i).type,
-                    level: 'protected'})
+                    { contentType: input.files.item(i).type})
         .then(result => {
             this.upload = {
                     bucket: awsExports.aws_user_files_s3_bucket,
