@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Checkbox, Slider, InputNumber } from 'antd';
 import 'antd/dist/antd.css';
 import { UserOutlined } from '@ant-design/icons';
@@ -19,22 +18,38 @@ const renderCheckboxList = (filterObject, onChange, colorKeys) => {
     });
 }
 
-const PatentVisualizerSidebar = (props) => {
-    const { sequenceLength } = props;
-    const [ minValue, setMinValue ] = useState(1);
-    const [ maxValue, setMaxValue ] = useState(sequenceLength);
-    useEffect(() => {
-        // If maxValue is not defined or 0 we want to make sure the full range is selected
-        // This happens on first render when component have not sent the data to props.sequenceLength
-        if(!maxValue) {
-            setMaxValue(sequenceLength);
-        }
-    }, [sequenceLength, maxValue]);
+const renderInputNumber = (value, label, onChange) => {
+    return (
+        <div key={'inputNumber' + label} style={{ 
+            display: 'flex',
+            margin: 'auto',
+            justifyContent: 'center',
+            alignItems: 'baseline'
+        }}>
+            <span>{label}</span>
+            <InputNumber
+                style={{ margin: '0 16px', width: '40%' }}
+                value={value}
+                onChange={onChange}
+            />
+        </div>
+    );
+}
+const renderSequenceFilter = (min, max, length, onSequenceRangeFilterChange) => {
+    return (
+        [
+            <Slider key={'slider1'} style={{ width: '80%', margin: 'auto', padding: '25px 0px' }} range value={[ min, max ]} max={length}
+                onChange={([ minSlider, maxSlider ]) => onSequenceRangeFilterChange({ min: minSlider, max: maxSlider })} 
+            />,
+            renderInputNumber(min, StringManager.get('minLabel'), (min) => onSequenceRangeFilterChange({ min, max })),
+            renderInputNumber(max, StringManager.get('maxLabel'), (max) => onSequenceRangeFilterChange({ min, max }))
+        ]
+    );
+}
 
-    // Notify parent component that the sequence range has changed
-    // useEffect(() => {
-    //     onSequenceRangeFilterChange({ min: minValue, max: maxValue });
-    // }, [minValue, maxValue, onSequenceRangeFilterChange]);
+const PatentVisualizerSidebar = (props) => {
+    const { onSequenceRangeFilterChange, sequenceRange } = props;
+    const { min, max, length } = sequenceRange;
 
     return (
         <Sider width={'15%'} className="site-layout-background">
@@ -47,44 +62,8 @@ const PatentVisualizerSidebar = (props) => {
                 <SubMenu key="sub1" icon={<UserOutlined />} title={StringManager.get('filterByAssignee')}>
                     {renderCheckboxList(props.assignees, props.onAssigneeFilterChange, props.colorKeys)}
                 </SubMenu>
-                <SubMenu key="sub2" icon={<UserOutlined />} title="Filter By Sequence Position">
-                    <Slider style={{ width: '80%', margin: 'auto', padding: '25px 0px' }} range value={[ minValue, maxValue ]} max={props.sequenceLength} onChange={(data) => {
-                        setMinValue(data[0]);
-                        setMaxValue(data[1]);
-                    }} />
-                    <div style={{ 
-                        display: 'flex',
-                        margin: 'auto',
-                        justifyContent: 'center',
-                        alignItems: 'baseline'
-                    }}>
-                        <span>Min:</span>
-                        <InputNumber
-                            min={1}
-                            max={maxValue}
-                            style={{ margin: '0 16px', width: '40%' }}
-                            value={minValue}
-                            onChange={(min) => {
-                                setMinValue(min);
-                                console.log('min', min);
-                            }}
-                        />
-                    </div>
-                    <div style={{ 
-                        display: 'flex',
-                        margin: 'auto',
-                        justifyContent: 'center',
-                        alignItems: 'baseline'
-                    }}>
-                        <span>Max:</span>
-                        <InputNumber
-                            min={minValue}
-                            max={props.sequenceLength}
-                            style={{ margin: '0 16px', width: '40%' }}
-                            value={maxValue}
-                            onChange={(max) => setMaxValue(max)}
-                        />
-                    </div>
+                <SubMenu key="sub2" icon={<UserOutlined />} title={StringManager.get('filterBySequencePosition')}>
+                    {renderSequenceFilter(min, max, length, onSequenceRangeFilterChange)}
                 </SubMenu>
             </Menu>
         </Sider>

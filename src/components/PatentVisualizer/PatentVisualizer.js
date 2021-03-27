@@ -18,6 +18,17 @@ const KEYS = {
 }
 Object.freeze(KEYS);
 
+const getMaximumSeq = (patentArray) => {
+    return patentArray.reduce((max, current) => {
+        const seqPosition = parseInt(current[KEYS.sequencePosition]);
+        if(seqPosition > max) {
+            return seqPosition;
+        } else {
+            return max;
+        }
+    }, 0);
+}
+
 const PatentVisualizer = () => {
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
@@ -27,16 +38,18 @@ const PatentVisualizer = () => {
         asyncFetch();
     }, []);
 
-    // Assignees Effect
+    // Filtering Effect
     const [assignees, setAssignees] = useState({});
-    const [sequenceRange, setSequenceRange] = useState({ min: 1, max: 100 });
+    const [sequenceRange, setSequenceRange] = useState({ min: 1, max: 1, length: 1 });
     useEffect(() => {
         setData(_dataRef.current
+            // By Assignee
             .filter(patentData => {
                 return assignees[patentData[KEYS.assignee]]
             })
+            // By Sequence Range
             .filter((patentData) => {
-                return sequenceRange.min <= patentData[KEYS.sequencePosition] <= sequenceRange.max;
+                return sequenceRange.min <= patentData[KEYS.sequencePosition] && patentData[KEYS.sequencePosition] <= sequenceRange.max;
             })
         );
     }, [assignees, sequenceRange]);
@@ -55,6 +68,8 @@ const PatentVisualizer = () => {
                 });
                 setAssignees(assigneeFilters);
                 setColorKeys(assignColors(uniqueAssignees));
+                const maximumSeq = getMaximumSeq(response);
+                setSequenceRange({ min: 1, max: maximumSeq, length: maximumSeq });
             })
             .catch((error) => {
                 console.log('fetch data failed', error);
@@ -108,15 +123,16 @@ const PatentVisualizer = () => {
         });
     }
 
-    const onSequenceRangeFilterChange = (sequenceRange) => {
+    const onSequenceRangeFilterChange = (newRange) => {
         setSequenceRange({
-            ...sequenceRange
+            ...sequenceRange,
+            ...newRange
         });
     }
     return (
         [
             <Layout>
-                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceLength={data.length}
+                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length}
                     onAssigneeFilterChange={onAssigneeFilterChange} 
                     onSequenceRangeFilterChange={onSequenceRangeFilterChange}
                 />
