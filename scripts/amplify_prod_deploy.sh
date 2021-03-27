@@ -60,7 +60,19 @@ AWS_CONFIG="{\
 \"useProfile\":true,\
 \"profileName\":\"default\"\
 }"
-
+AWSCLOUDFORMATION_CONFIG="{\
+\"Region\": \"us-east-1\",\
+\"DeploymentBucketName\": \"amplify-psv-prod-44827-deployment\",\
+\"UnauthRoleName\": \"amplify-psv-prod-44827-unauthRole\",\
+\"StackName\": \"amplify-psv-prod-44827\",\
+\"StackId\": \"arn:aws:cloudformation:us-east-1:147427553671:stack/amplify-psv-prod-44827/bfc74ad0-8ddd-11eb-96eb-1284a25b9bc9\",\
+\"AuthRoleName\": \"amplify-psv-dev-10725-authRole\",\
+\"UnauthRoleArn\": \"arn:aws:iam::147427553671:role/amplify-psv-prod-44827-unauthRole\",\
+\"AuthRoleArn\": \"arn:aws:iam::147427553671:role/amplify-psv-prod-44827-authRole\"\
+}"
+PROVIDER_CONFIG="{\
+\"awscloudformation\":$AWSCLOUDFORMATION_CONFIG\
+}"
 
 # echo
 echo "amplify version $(amplify --version)"
@@ -70,7 +82,7 @@ echo '{"projectPath": "'"$(pwd)"'","defaultEditor":"code","envName":"prod"}' > .
 # if environment doesn't exist fail explicitly
 if [ -z "$(amplify env get --name prod | grep 'No environment found')" ] ; then  
     echo "found existing environment prod"
-    amplify env import prod --providers $PROVIDERS  --yes 
+    amplify env import --name prod  --config $PROVIDER_CONFIG  --awsInfo $AWS_CONFIG
 else
     echo "prod environment does not exist.. exiting";
     exit 1
