@@ -14,7 +14,10 @@ const { Sider } = Layout;
 const KEYS = {
     assignee: 'Assignee',
     sequencePosition: 'Sequence Position',
-    patentNumber: 'Patent Number'
+    patentNumber: 'Patent Number',
+    claimed: 'Claimed',
+    aminoAcid: 'Amino Acid',
+    baseline: 'Sequence'
 }
 Object.freeze(KEYS);
 
@@ -33,6 +36,7 @@ const PatentVisualizer = () => {
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
+    const [showBaseline, setBaseline] = useState(false);
     const _dataRef = useRef([]);
     useEffect(() => {
         asyncFetch();
@@ -45,14 +49,15 @@ const PatentVisualizer = () => {
         setData(_dataRef.current
             // By Assignee
             .filter(patentData => {
-                return assignees[patentData[KEYS.assignee]]
+                // We remove the baseline sequence of this filter as it is not really an assignee but we need to format data that way
+                return assignees[patentData[KEYS.assignee]] || patentData[KEYS.assignee] === KEYS.baseline;
             })
             // By Sequence Range
             .filter((patentData) => {
                 return sequenceRange.min <= patentData[KEYS.sequencePosition] && patentData[KEYS.sequencePosition] <= sequenceRange.max;
             })
         );
-    }, [assignees, sequenceRange]);
+    }, [assignees, sequenceRange, showBaseline]);
     
 
     const asyncFetch = () => {
@@ -60,7 +65,8 @@ const PatentVisualizer = () => {
             .then((response) => {
                 setData(response);
                 _dataRef.current = response;
-                const uniqueAssignees = getUnique(response, KEYS.assignee);
+                // We remove baseline of assignee set as it is not really an assignee but we need to format data that way
+                const uniqueAssignees = getUnique(response, KEYS.assignee).filter((assignee) => assignee !== KEYS.baseline);
                 let assigneeFilters = {
                 };
                 uniqueAssignees.forEach((item) => {
@@ -99,10 +105,27 @@ const PatentVisualizer = () => {
         yField: KEYS.patentNumber,
         colorField: KEYS.assignee,
         color: (assignee) => {
-            return colorKeys[assignee];
+            if (assignee !== KEYS.baseline) {
+                return colorKeys[assignee];
+            } else {
+                return 'transparent';
+            }
+        },
+        label: {
+            offset: -2,
+            style: {
+                fill: 'black',
+                shadowBlur: 2,
+                shadowColor: 'rgba(0, 0, 0, .45)',
+            },
+            formatter: (residueData) => {
+                if(residueData[KEYS.patentNumber] === KEYS.baseline && showBaseline) {
+                    return residueData[KEYS.aminoAcid];
+                }
+            }
         },
         showContent: true,
-        meta: { [KEYS.sequencePosition] : { type: 'cat' } },
+        meta: { [KEYS.patentNumber] : { type: 'cat' } },
     };
     
     const onEvent = (chart, event) => {
@@ -129,12 +152,18 @@ const PatentVisualizer = () => {
             ...newRange
         });
     }
+
+    const toggleBaseline = (e) => {
+        setBaseline(e.target.checked);
+    }
+
     return (
         [
             <Layout>
-                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length}
+                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length} showBaseline={showBaseline}
                     onAssigneeFilterChange={onAssigneeFilterChange} 
                     onSequenceRangeFilterChange={onSequenceRangeFilterChange}
+                    toggleBaseline={toggleBaseline}
                 />
                 <Layout style={{ padding: '24px' }}>
                     <Heatmap onEvent={onEvent} {...config} />
