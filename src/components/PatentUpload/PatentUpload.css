@@ -1,15 +1,15 @@
-label {
+.proteinLabel {
     margin-top: 25px;
     display:block;
     font-size: medium;
     font-weight: 500;
 }
 
-input {
+.proteinInput {
     margin-bottom: 50px;
 }
 
-button {
+.uploadButton {
     margin-top: 50px;
     margin-bottom: 50px;
     background-color: rgb(16, 155, 241);
@@ -19,11 +19,17 @@ button {
     border:lightskyblue;
     padding: 10px;
 }
+.toUploadLabel {
+    margin-top: 25px;
+    display:block;
+    font-size: medium;
+    font-weight: 400;
+}
 
-#fileList {
+.fileList {
     border: 1px solid black;
 }
 
-input:invalid {
+.proteinLabel:invalid {
     color: red;
 }
