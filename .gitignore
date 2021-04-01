@@ -168,3 +168,6 @@ amplify-build-config.json
 amplify-gradle-config.json
 amplifytools.xcconfig
 .secret-*
+amplify/backend/backend-config.json
+amplify/backend/storage/psvfbaaaa36/parameters.json
+amplify/team-provider-info.json
