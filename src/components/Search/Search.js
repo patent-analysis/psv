@@ -18,31 +18,22 @@ const options = [
 const Search = () => {
     let history = useHistory();
     const onFinish = (values) => {
-        history.push('/results');
-        console.log('Success:', values);
+        history.push({pathname : '/results', state: {proteinName: values.protein}});
+        console.log('Fetching patents for:', values);
     };
 
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
-    console.log('DEPLOY TEST LOG, FEEL FREE TO REMOVE ME')
 
     return (
         <Form
             name="basic"
             className="search-container"
             initialValues={{ remember: true }}
-            onFinish={onFinish}
+            onFinish={(values) => onFinish(values)}
             onFinishFailed={onFinishFailed}
         >
-            <Form.Item
-                label={StringManager.get('selectEpitope')}
-                name="sequence"
-                className="search-container__input"
-                rules={[{ required: false }]}
-            >
-                <Input />
-            </Form.Item>
             <Form.Item
                 className="search-container__searchbox"
                 name="protein"
@@ -53,6 +44,14 @@ const Search = () => {
                     placeholder={StringManager.get('selectProtein')}
                     filterOption={(inputValue, option) => option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
                 />
+            </Form.Item>
+            <Form.Item
+                label={StringManager.get('selectEpitope')}
+                name="sequence"
+                className="search-container__input"
+                rules={[{ required: false }]}
+            >
+                <Input />
             </Form.Item>
             <Form.Item>
                 <Button type="primary" htmlType="submit">
