@@ -7,12 +7,6 @@
     "bioMoleculesDB": {
       "service": "DynamoDB",
       "providerPlugin": "awscloudformation"
-    },
-    "psvfbaaaa36": {
-      "service": "S3",
-      "serviceType": "imported",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": []
     }
   },
   "function": {
