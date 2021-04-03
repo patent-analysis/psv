@@ -14,33 +14,59 @@ const { Sider } = Layout;
 const KEYS = {
     assignee: 'Assignee',
     sequencePosition: 'Sequence Position',
-    patentNumber: 'Patent Number'
+    patentNumber: 'Patent Number',
+    claimed: 'Claimed',
+    aminoAcid: 'Amino Acid',
+    baseline: 'Sequence'
 }
 Object.freeze(KEYS);
+
+const getMaximumSeq = (patentArray) => {
+    return patentArray.reduce((max, current) => {
+        const seqPosition = parseInt(current[KEYS.sequencePosition]);
+        if(seqPosition > max) {
+            return seqPosition;
+        } else {
+            return max;
+        }
+    }, 0);
+}
 
 const PatentVisualizer = () => {
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
+    const [showBaseline, setBaseline] = useState(false);
     const _dataRef = useRef([]);
     useEffect(() => {
         asyncFetch();
     }, []);
 
-    // Assignees Effect
+    // Filtering Effect
     const [assignees, setAssignees] = useState({});
+    const [sequenceRange, setSequenceRange] = useState({ min: 1, max: 1, length: 1 });
     useEffect(() => {
-        setData(_dataRef.current.filter(patentData => {
-            return assignees[patentData[KEYS.assignee]]
-        }))
-    }, [assignees]);
+        setData(_dataRef.current
+            // By Assignee
+            .filter(patentData => {
+                // We remove the baseline sequence of this filter as it is not really an assignee but we need to format data that way
+                return assignees[patentData[KEYS.assignee]] || patentData[KEYS.assignee] === KEYS.baseline;
+            })
+            // By Sequence Range
+            .filter((patentData) => {
+                return sequenceRange.min <= patentData[KEYS.sequencePosition] && patentData[KEYS.sequencePosition] <= sequenceRange.max;
+            })
+        );
+    }, [assignees, sequenceRange, showBaseline]);
+    
 
     const asyncFetch = () => {
         Promise.resolve(mock)
             .then((response) => {
                 setData(response);
                 _dataRef.current = response;
-                const uniqueAssignees = getUnique(response, KEYS.assignee);
+                // We remove baseline of assignee set as it is not really an assignee but we need to format data that way
+                const uniqueAssignees = getUnique(response, KEYS.assignee).filter((assignee) => assignee !== KEYS.baseline);
                 let assigneeFilters = {
                 };
                 uniqueAssignees.forEach((item) => {
@@ -48,36 +74,58 @@ const PatentVisualizer = () => {
                 });
                 setAssignees(assigneeFilters);
                 setColorKeys(assignColors(uniqueAssignees));
+                const maximumSeq = getMaximumSeq(response);
+                setSequenceRange({ min: 1, max: maximumSeq, length: maximumSeq });
             })
             .catch((error) => {
                 console.log('fetch data failed', error);
             });
     };
+    const gridStyles = { 
+        grid: {
+            line: {
+                style: {
+                    stroke: 'black',
+                    lineWidth: 1,
+                    strokeOpacity: 0.3,
+                    cursor: 'pointer'
+                }
+            }
+        }
+    }
+
     const config = {
         width: 650,
         height: 500,
         autoFit: true,
         data: data,
         xField: KEYS.sequencePosition,
-        axis: {
-            grid: {
-                line: {
-                    style: {
-                        stroke: 'black',
-                        lineWidth: 1,
-                        strokeOpacity: 0.1,
-                        cursor: 'pointer'
-                    }
-                }
-            }
-        },
+        xAxis: gridStyles,
+        yAxis: gridStyles,
         yField: KEYS.patentNumber,
         colorField: KEYS.assignee,
         color: (assignee) => {
-            return colorKeys[assignee];
+            if (assignee !== KEYS.baseline) {
+                return colorKeys[assignee];
+            } else {
+                return 'transparent';
+            }
+        },
+        label: {
+            offset: -2,
+            style: {
+                fill: 'black',
+                shadowBlur: 2,
+                shadowColor: 'rgba(0, 0, 0, .45)',
+            },
+            formatter: (residueData) => {
+                if(residueData[KEYS.patentNumber] === KEYS.baseline && showBaseline) {
+                    return residueData[KEYS.aminoAcid];
+                }
+            }
         },
         showContent: true,
-        meta: { [KEYS.sequencePosition] : { type: 'cat' } },
+        meta: { [KEYS.patentNumber] : { type: 'cat' } },
     };
     
     const onEvent = (chart, event) => {
@@ -97,10 +145,26 @@ const PatentVisualizer = () => {
             [name]: e.target.checked
         });
     }
+
+    const onSequenceRangeFilterChange = (newRange) => {
+        setSequenceRange({
+            ...sequenceRange,
+            ...newRange
+        });
+    }
+
+    const toggleBaseline = (e) => {
+        setBaseline(e.target.checked);
+    }
+
     return (
         [
             <Layout>
-                <PatentVisualizerSidebar assignees={assignees} onAssigneeFilterChange={onAssigneeFilterChange} />
+                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length} showBaseline={showBaseline}
+                    onAssigneeFilterChange={onAssigneeFilterChange} 
+                    onSequenceRangeFilterChange={onSequenceRangeFilterChange}
+                    toggleBaseline={toggleBaseline}
+                />
                 <Layout style={{ padding: '24px' }}>
                     <Heatmap onEvent={onEvent} {...config} />
                 </Layout>
