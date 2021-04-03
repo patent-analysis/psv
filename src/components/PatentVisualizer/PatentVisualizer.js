@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import 'antd/dist/antd.css';
 import './PatentVisualizer.css';
 import { CloseOutlined } from '@ant-design/icons';
-import { Heatmap } from '@ant-design/charts';
+import { Heatmap, G2 } from '@ant-design/charts';
 import { Layout, Button } from 'antd';
 import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
@@ -33,6 +33,45 @@ const getMaximumSeq = (patentArray) => {
 }
 
 const PatentVisualizer = () => {
+
+    G2.registerShape('polygon', 'boundary-polygon', {
+        draw: function draw(cfg, container) {
+            var group = container.addGroup();
+            var points = cfg.points;
+            var attrs = {
+                fill: cfg.color,
+                path: [],
+            };
+          
+            var path = [
+                ['M', points[0].x, points[0].y],
+                ['L', points[1].x, points[1].y],
+                ['L', points[2].x, points[2].y],
+                ['L', points[3].x, points[3].y],
+                ['Z'],
+            ];
+            attrs.path = this.parsePath(path);
+            group.addShape('path', { attrs: attrs });
+            if (cfg.data[KEYS.sequencePosition] === details.seqPosition) {
+                var linePath = [
+                    ['M', points[0].x, points[0].y],
+                    ['L', points[1].x, points[1].y],
+                    ['L', points[2].x, points[2].y],
+                    ['L', points[3].x, points[3].y],
+                    ['Z'],
+                ];
+                group.addShape('path', {
+                    attrs: {
+                        path: this.parsePath(linePath),
+                        lineWidth: 4,
+                        stroke: '#404040',
+                    },
+                });
+            }
+            return group;
+        },
+    });
+
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
@@ -75,7 +114,7 @@ const PatentVisualizer = () => {
                 setAssignees(assigneeFilters);
                 setColorKeys(assignColors(uniqueAssignees));
                 const maximumSeq = getMaximumSeq(response);
-                setSequenceRange({ min: 1, max: maximumSeq, length: maximumSeq });
+                setSequenceRange({ min: 1, max: maximumSeq > 30 ? 30 : maximumSeq, length: maximumSeq });
             })
             .catch((error) => {
                 console.log('fetch data failed', error);
@@ -104,6 +143,7 @@ const PatentVisualizer = () => {
         yAxis: gridStyles,
         yField: KEYS.patentNumber,
         colorField: KEYS.assignee,
+        shape: 'boundary-polygon',
         color: (assignee) => {
             if (assignee !== KEYS.baseline) {
                 return colorKeys[assignee];

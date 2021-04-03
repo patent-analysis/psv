@@ -42,7 +42,7 @@ const getRandomPatents = (size) => {
 */
 let baseline = [];
 for (let i = 1; i <= MAX_SEQ_LENGTH; i++) {
-    const amino = ['A', 'R', 'N', 'D'];
+    const amino = ['A', 'R', 'N', 'D', 'G', 'C', 'P', 'S', 'Y', 'I'];
     const randomAmino = amino[Math.floor(Math.random() * amino.length)];
     baseline.push({
         'Patent Number': 'Sequence',
@@ -52,7 +52,7 @@ for (let i = 1; i <= MAX_SEQ_LENGTH; i++) {
     })
 }
 
-const mockResults = getRandomPatents(80).concat(baseline).sort((a, b) => {
+const mockResults = getRandomPatents(200).concat(baseline).sort((a, b) => {
     if(parseInt(a['Sequence Position']) < parseInt(b['Sequence Position'])) {
         return -1;
     } else if (parseInt(a['Sequence Position']) > parseInt(b['Sequence Position'])) {
