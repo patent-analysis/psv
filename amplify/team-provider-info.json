@@ -13,13 +13,12 @@
     },
     "categories": {
       "auth": {
-        "psv9eb3d258": {},
         "psv670c5d1b": {}
       },
       "function": {
         "patentsLambda": {
           "deploymentBucketName": "amplify-psv-dev-10725-deployment",
-          "s3Key": "amplify-builds/patentsLambda-6c6f70324e6750564237-build.zip"
+          "s3Key": "amplify-builds/patentsLambda-67774c347668716a3249-build.zip"
         },
         "bioMoleculesLambda": {
           "deploymentBucketName": "amplify-psv-dev-10725-deployment",
@@ -28,6 +27,12 @@
         "patentUploadsLambda": {
           "deploymentBucketName": "amplify-psv-dev-10725-deployment",
           "s3Key": "amplify-builds/patentUploadsLambda-75314a796d615073706e-build.zip"
+        }
+      },
+      "storage": {
+        "psv5bde52bf": {
+          "bucketName": "psv-document-storage",
+          "region": "us-east-1"
         }
       }
     }
@@ -60,6 +65,12 @@
         "patentUploadsLambda": {
           "deploymentBucketName": "amplify-psv-prod-44827-deployment",
           "s3Key": "amplify-builds/patentUploadsLambda-75314a796d615073706e-build.zip"
+        }
+      },
+      "storage": {
+        "psv5bde52bf": {
+          "bucketName": "psv-document-storage",
+          "region": "us-east-1"
         }
       }
     }
