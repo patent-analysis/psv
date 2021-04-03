@@ -49,8 +49,8 @@
       },
       "storage": {
         "psvbf0e1a08": {
-          "bucketName": "psv-document-storage",
-          "region": "us-east-1"
+          "AMPLIFY_STORAGE_BUCKET_NAME": "psv-document-storage",
+          "AMPLIFY_STORAGE_REGION": "us-east-1"
         },
         "function": {
           "patentsLambda": {
