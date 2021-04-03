@@ -31,11 +31,14 @@ const getMaximumSeq = (patentArray) => {
 }
 
 function getPatentData(proteinId){
+    /**
+     * Fetch patent details from the patents database for the given $proteinId
+     */
     const apiName = 'patentsAPI';
     const path = '/patents'; 
     const myInit = { 
         headers: {}, 
-        response: false, // OPTIONAL (return the entire Axios response object instead of only response.data)
+        response: false, // Only return response.data
         queryStringParameters: {  
             'proteinId': proteinId
         }
@@ -46,9 +49,14 @@ function getPatentData(proteinId){
 }
 
 function generateVisualizationDataset(patentData) {
+    /**
+     * The $patentData retrieved from the patents database contains comma-separated
+     * lists of claimed residues. This function explodes the patentData to generate JSONs
+     * for every claimed reside - to build the heat map visualization.
+     */
     var visualizationDataset = [];
     var i = 0;
-    
+
     patentData.forEach((patentInfo) => {
         const assignee = patentInfo[KEYS.assignee]
         const patentNumber = patentInfo[KEYS.patentNumber]
@@ -79,7 +87,7 @@ const PatentVisualizer = props => {
 
     useEffect(() => {
         const proteinName = location.state.proteinName;
-        console.log('Fetching details for', proteinName)
+        console.log('Fetching patent details for', proteinName)
         const patentData = getPatentData(proteinName);
         setPatentData(patentData);
     }, []);
@@ -103,10 +111,10 @@ const PatentVisualizer = props => {
     const setPatentData = (patentData) => {
         Promise.resolve(patentData)
             .then((patentData) => {
-                console.log('Patent Data: ', patentData)
+                console.debug('Patent Data: ', patentData)
 
+                //Generate individual data points for the heat map based on the patent data
                 const response = generateVisualizationDataset(patentData)
-                console.log('Viz Data: ', response)
 
                 setData(response);
                 _dataRef.current = response;
@@ -207,6 +215,7 @@ const PatentVisualizer = props => {
                 </Sider>
                 }
             </Layout>,
+            //TODO: PatentTable to be populated with $patentData 
             <PatentTable />
         ]
     )

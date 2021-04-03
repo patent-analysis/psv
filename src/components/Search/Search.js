@@ -3,6 +3,7 @@ import StringManager from '../../utils/StringManager';
 import './Search.css';
 import { useHistory } from 'react-router-dom';
 
+//TODO: Replace this static list with a list of all protein Ids available in the database.
 const options = [
     {
         value: 'PCSK9',
@@ -19,7 +20,7 @@ const Search = () => {
     let history = useHistory();
     const onFinish = (values) => {
         history.push({pathname : '/results', state: {proteinName: values.protein}});
-        console.log('Fetching patents for:', values);
+        console.log('Searching for patent details for:', values);
     };
 
     const onFinishFailed = (errorInfo) => {
