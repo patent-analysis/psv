@@ -8,14 +8,18 @@ import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
+import { getPatentData, generateVisualizationDataset } from '../../utils/patentDataUtils';
 import { useLocation } from 'react-router-dom';
-import { API } from 'aws-amplify';
+
 const { Sider } = Layout;
 
 const KEYS = {
     assignee: 'patentAssignees',
     sequencePosition: 'sequencePosition',
-    patentNumber: 'patentNumber'
+    patentNumber: 'patentNumber',
+    claimed: 'Claimed',
+    aminoAcid: 'Amino Acid',
+    baseline: 'Sequence'
 }
 Object.freeze(KEYS);
 
@@ -30,59 +34,13 @@ const getMaximumSeq = (patentArray) => {
     }, 0);
 }
 
-function getPatentData(proteinId){
-    /**
-     * Fetch patent details from the patents database for the given $proteinId
-     */
-    const apiName = 'patentsAPI';
-    const path = '/patents'; 
-    const myInit = { 
-        headers: {}, 
-        response: false, // Only return response.data
-        queryStringParameters: {  
-            'proteinId': proteinId
-        }
-    };
-
-    console.log('Calling API', apiName, path, myInit)
-    return API.get(apiName, path, myInit);
-}
-
-function generateVisualizationDataset(patentData) {
-    /**
-     * The $patentData retrieved from the patents database contains comma-separated
-     * lists of claimed residues. This function explodes the patentData to generate JSONs
-     * for every claimed reside - to build the heat map visualization.
-     */
-    var visualizationDataset = [];
-    var i = 0;
-
-    patentData.forEach((patentInfo) => {
-        const assignee = patentInfo[KEYS.assignee]
-        const patentNumber = patentInfo[KEYS.patentNumber]
-        const residues = patentInfo['claimedResidues']
-        const residuesList = residues.split(',')
-
-        residuesList.forEach((sequencePosition) => {
-            const visualizationData = {
-                'patentAssignees': assignee,
-                'patentNumber': patentNumber,
-                'sequencePosition': sequencePosition.trim()
-            };
-            visualizationDataset[i] = visualizationData;
-            i++;
-        });
-        
-    });
-    return visualizationDataset;
-}
-
 const PatentVisualizer = props => {
     const location = useLocation();
 
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
+    const [showBaseline, setBaseline] = useState(false);
     const _dataRef = useRef([]);
 
     useEffect(() => {
@@ -99,14 +57,15 @@ const PatentVisualizer = props => {
         setData(_dataRef.current
             // By Assignee
             .filter(patentData => {
-                return assignees[patentData[KEYS.assignee]]
+                // We remove the baseline sequence of this filter as it is not really an assignee but we need to format data that way
+                return assignees[patentData[KEYS.assignee]] || patentData[KEYS.assignee] === KEYS.baseline;
             })
             // By Sequence Range
             .filter((patentData) => {
                 return sequenceRange.min <= patentData[KEYS.sequencePosition] && patentData[KEYS.sequencePosition] <= sequenceRange.max;
             })
         );
-    }, [assignees, sequenceRange]);
+    }, [assignees, sequenceRange, showBaseline]);
 
     const setPatentData = (patentData) => {
         Promise.resolve(patentData)
@@ -118,7 +77,8 @@ const PatentVisualizer = props => {
 
                 setData(response);
                 _dataRef.current = response;
-                const uniqueAssignees = getUnique(response, KEYS.assignee);
+                // We remove baseline of assignee set as it is not really an assignee but we need to format data that way
+                const uniqueAssignees = getUnique(response, KEYS.assignee).filter((assignee) => assignee !== KEYS.baseline);
                 let assigneeFilters = {
                 };
                 uniqueAssignees.forEach((item) => {
@@ -158,10 +118,27 @@ const PatentVisualizer = props => {
         yField: KEYS.patentNumber,
         colorField: KEYS.assignee,
         color: (assignee) => {
-            return colorKeys[assignee];
+            if (assignee !== KEYS.baseline) {
+                return colorKeys[assignee];
+            } else {
+                return 'transparent';
+            }
+        },
+        label: {
+            offset: -2,
+            style: {
+                fill: 'black',
+                shadowBlur: 2,
+                shadowColor: 'rgba(0, 0, 0, .45)',
+            },
+            formatter: (residueData) => {
+                if(residueData[KEYS.patentNumber] === KEYS.baseline && showBaseline) {
+                    return residueData[KEYS.aminoAcid];
+                }
+            }
         },
         showContent: true,
-        meta: { [KEYS.sequencePosition] : { type: 'cat' } },
+        meta: { [KEYS.patentNumber] : { type: 'cat' } },
     };
     
     const onEvent = (chart, event) => {
@@ -188,12 +165,18 @@ const PatentVisualizer = props => {
             ...newRange
         });
     }
+
+    const toggleBaseline = (e) => {
+        setBaseline(e.target.checked);
+    }
+
     return (
         [
             <Layout>
-                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length}
+                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length} showBaseline={showBaseline}
                     onAssigneeFilterChange={onAssigneeFilterChange} 
                     onSequenceRangeFilterChange={onSequenceRangeFilterChange}
+                    toggleBaseline={toggleBaseline}
                 />
                 <Layout style={{ padding: '24px' }}>
                     <Heatmap onEvent={onEvent} {...config} />

@@ -8,7 +8,8 @@ const strings = {
     filterByAssignee: 'Filter By Assignee',
     filterBySequencePosition: 'Filter By Sequence Position',
     minLabel: 'Min:',
-    maxLabel: 'Max:'
+    maxLabel: 'Max:',
+    showAminoSequence: 'Show Amino Acid Sequence'
 }
 
 export default Object.freeze(strings);

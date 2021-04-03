@@ -14,7 +14,7 @@ const renderCheckboxList = (filterObject, onChange, colorKeys) => {
                     {key} {colorKeys[key] && <ColorSquare color={colorKeys[key]} />}
                 </Checkbox>
             </Menu.Item>
-        )
+        );
     });
 }
 
@@ -65,6 +65,11 @@ const PatentVisualizerSidebar = (props) => {
                 <SubMenu key="sub2" icon={<UserOutlined />} title={StringManager.get('filterBySequencePosition')}>
                     {renderSequenceFilter(min, max, length, onSequenceRangeFilterChange)}
                 </SubMenu>
+                <Menu.Item>
+                    <Checkbox onChange={props.toggleBaseline} checked={props.showBaseline}>
+                        {StringManager.get('showAminoSequence')}
+                    </Checkbox>
+                </Menu.Item>
             </Menu>
         </Sider>
     );
