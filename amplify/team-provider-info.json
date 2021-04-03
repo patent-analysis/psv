@@ -33,6 +33,10 @@
         "psv5bde52bf": {
           "bucketName": "psv-document-storage",
           "region": "us-east-1"
+        },
+        "psv73bafc39": {
+          "bucketName": "psv-document-storage",
+          "region": "us-east-1"
         }
       }
     }
