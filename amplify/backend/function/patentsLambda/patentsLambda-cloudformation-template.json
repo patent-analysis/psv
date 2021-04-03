@@ -97,12 +97,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "psvLambdaRole9ad2bd87",
+            "psvLambdaRole6e2b506c",
             {
               "Fn::Join": [
                 "",
                 [
-                  "psvLambdaRole9ad2bd87",
+                  "psvLambdaRole6e2b506c",
                   "-",
                   {
                     "Ref": "env"

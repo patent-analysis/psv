@@ -1,0 +1,35 @@
+{
+    "paths": [
+        {
+            "name": "/patents",
+            "lambdaFunction": "patentsLambda",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/patents"
+        }
+    ],
+    "resourceName": "patentsAPI",
+    "apiName": "patentsAPI",
+    "functionArns": [
+        {
+            "lambdaFunction": "patentsLambda"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-psv-dev-10725-authRole",
+        "unAuthRoleName": "amplify-psv-dev-10725-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "patentsLambda",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}

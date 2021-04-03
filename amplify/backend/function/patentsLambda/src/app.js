@@ -58,7 +58,18 @@ const convertUrlType = (param, type) => {
  * HTTP Get method for list objects *
  ********************************/
 
-app.get(path + hashKeyPath, function(req, res) {
+//app.get('/patents', function(req, res) {
+  //const query = req.query;
+  // or
+  // const query = req.apiGateway.event.queryStringParameters
+  // res.json({
+  //   event: req.apiGateway.event, // to view all event data
+  //   query: query
+  // });  
+//});
+
+
+app.get(path, function(req, res) {
   var condition = {}
   condition[partitionKeyName] = {
     ComparisonOperator: 'EQ'
@@ -75,9 +86,15 @@ app.get(path + hashKeyPath, function(req, res) {
     }
   }
 
+  const queryDict = req.query;
+  console.log(queryDict)
+
   let queryParams = {
     TableName: tableName,
-    KeyConditions: condition
+    IndexName: 'proteinId-index',
+    KeyConditionExpression: '#name = :value',
+    ExpressionAttributeValues: { ':value': queryDict['proteinId'] },
+    ExpressionAttributeNames: { '#name': 'proteinId' }
   }
 
   dynamodb.query(queryParams, (err, data) => {
