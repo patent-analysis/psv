@@ -8,13 +8,14 @@ import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
-import mock from '../../utils/mockResults';
+import { useLocation } from 'react-router-dom';
+import { API } from 'aws-amplify';
 const { Sider } = Layout;
 
 const KEYS = {
-    assignee: 'Assignee',
-    sequencePosition: 'Sequence Position',
-    patentNumber: 'Patent Number'
+    assignee: 'patentAssignees',
+    sequencePosition: 'sequencePosition',
+    patentNumber: 'patentNumber'
 }
 Object.freeze(KEYS);
 
@@ -29,13 +30,58 @@ const getMaximumSeq = (patentArray) => {
     }, 0);
 }
 
-const PatentVisualizer = () => {
+function getPatentData(proteinId){
+    const apiName = 'patentsAPI';
+    const path = '/patents'; 
+    const myInit = { 
+        headers: {}, 
+        response: false, // OPTIONAL (return the entire Axios response object instead of only response.data)
+        queryStringParameters: {  
+            'proteinId': proteinId
+        }
+    };
+
+    console.log('Calling API', apiName, path, myInit)
+    return API.get(apiName, path, myInit);
+}
+
+function generateVisualizationDataset(patentData) {
+    var visualizationDataset = [];
+    var i = 0;
+    
+    patentData.forEach((patentInfo) => {
+        const assignee = patentInfo[KEYS.assignee]
+        const patentNumber = patentInfo[KEYS.patentNumber]
+        const residues = patentInfo['claimedResidues']
+        const residuesList = residues.split(',')
+
+        residuesList.forEach((sequencePosition) => {
+            const visualizationData = {
+                'patentAssignees': assignee,
+                'patentNumber': patentNumber,
+                'sequencePosition': sequencePosition.trim()
+            };
+            visualizationDataset[i] = visualizationData;
+            i++;
+        });
+        
+    });
+    return visualizationDataset;
+}
+
+const PatentVisualizer = props => {
+    const location = useLocation();
+
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
     const _dataRef = useRef([]);
+
     useEffect(() => {
-        asyncFetch();
+        const proteinName = location.state.proteinName;
+        console.log('Fetching details for', proteinName)
+        const patentData = getPatentData(proteinName);
+        setPatentData(patentData);
     }, []);
 
     // Filtering Effect
@@ -53,11 +99,15 @@ const PatentVisualizer = () => {
             })
         );
     }, [assignees, sequenceRange]);
-    
 
-    const asyncFetch = () => {
-        Promise.resolve(mock)
-            .then((response) => {
+    const setPatentData = (patentData) => {
+        Promise.resolve(patentData)
+            .then((patentData) => {
+                console.log('Patent Data: ', patentData)
+
+                const response = generateVisualizationDataset(patentData)
+                console.log('Viz Data: ', response)
+
                 setData(response);
                 _dataRef.current = response;
                 const uniqueAssignees = getUnique(response, KEYS.assignee);
@@ -75,6 +125,7 @@ const PatentVisualizer = () => {
                 console.log('fetch data failed', error);
             });
     };
+
     const gridStyles = { 
         grid: {
             line: {
