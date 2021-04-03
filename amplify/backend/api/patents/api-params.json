@@ -1,0 +1,54 @@
+{
+    "paths": [
+        {
+            "name": "/patents",
+            "lambdaFunction": "patentsLambda",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/patents"
+        },
+        {
+            "name": "/bioMolecules",
+            "lambdaFunction": "bioMoleculesLambda",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/bioMolecules"
+        }
+    ],
+    "resourceName": "patents",
+    "apiName": "patents",
+    "functionArns": [
+        {
+            "lambdaFunction": "patentsLambda"
+        },
+        {
+            "lambdaFunction": "bioMoleculesLambda"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-psv-dev-185134-authRole",
+        "unAuthRoleName": "amplify-psv-dev-185134-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "patentsLambda",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        },
+        {
+            "category": "function",
+            "resourceName": "bioMoleculesLambda",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}

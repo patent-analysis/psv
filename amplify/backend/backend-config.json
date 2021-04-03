@@ -8,7 +8,7 @@
       "service": "DynamoDB",
       "providerPlugin": "awscloudformation"
     },
-    "psvfbaaaa36": {
+    "psv5bde52bf": {
       "service": "S3",
       "serviceType": "imported",
       "providerPlugin": "awscloudformation",
@@ -16,6 +16,25 @@
     }
   },
   "function": {
+    "patentsLambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "patentsDB",
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "attributeEnvMap": {
+            "Name": "TABLE_NAME",
+            "Arn": "TABLE_ARN"
+          }
+        }
+      ]
+    },
     "bioMoleculesLambda": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -39,35 +58,24 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
-    },
-    "patentsLambda": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "storage",
-          "resourceName": "patentsDB",
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "attributeEnvMap": {
-            "Name": "TABLE_NAME",
-            "Arn": "TABLE_ARN"
-          }
-        }
-      ]
     }
   },
   "api": {
-    "patentUploadAPI": {
+    "patents": {
       "service": "API Gateway",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
           "category": "function",
-          "resourceName": "patentUploadsLambda",
+          "resourceName": "patentsLambda",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "bioMoleculesLambda",
           "attributes": [
             "Name",
             "Arn"
@@ -75,13 +83,13 @@
         }
       ]
     },
-    "patentsAPI": {
+    "patentUploadAPI": {
       "service": "API Gateway",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
           "category": "function",
-          "resourceName": "patentsLambda",
+          "resourceName": "patentUploadsLambda",
           "attributes": [
             "Name",
             "Arn"
