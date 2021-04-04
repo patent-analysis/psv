@@ -1,0 +1,35 @@
+.proteinLabel {
+    margin-top: 25px;
+    display:block;
+    font-size: medium;
+    font-weight: 500;
+}
+
+.proteinInput {
+    margin-bottom: 50px;
+}
+
+.uploadButton {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    background-color: rgb(16, 155, 241);
+    color: white;
+    cursor: pointer;
+    border-radius: 25px;
+    border:lightskyblue;
+    padding: 10px;
+}
+.toUploadLabel {
+    margin-top: 25px;
+    display:block;
+    font-size: medium;
+    font-weight: 400;
+}
+
+.fileList {
+    border: 1px solid black;
+}
+
+.proteinLabel:invalid {
+    color: red;
+}
