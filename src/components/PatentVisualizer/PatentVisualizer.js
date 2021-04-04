@@ -69,30 +69,24 @@ const PatentVisualizer = props => {
     }, [assignees, sequenceRange, showBaseline]);
 
     const setPatentData = (patentData) => {
-        Promise.resolve(patentData)
-            .then((patentData) => {
-                console.debug('Patent Data: ', patentData)
+        console.debug('Patent Data: ', patentData)
 
-                //Generate individual data points for the heat map based on the patent data
-                const response = generateVisualizationDataset(patentData)
+        //Generate individual data points for the heat map based on the patent data
+        const response = generateVisualizationDataset(patentData)
 
-                setData(response);
-                _dataRef.current = response;
-                // We remove baseline of assignee set as it is not really an assignee but we need to format data that way
-                const uniqueAssignees = getUnique(response, KEYS.assignee).filter((assignee) => assignee !== KEYS.baseline);
-                let assigneeFilters = {
-                };
-                uniqueAssignees.forEach((item) => {
-                    assigneeFilters[item] = true;
-                });
-                setAssignees(assigneeFilters);
-                setColorKeys(assignColors(uniqueAssignees));
-                const maximumSeq = getMaximumSeq(response);
-                setSequenceRange({ min: 1, max: maximumSeq, length: maximumSeq });
-            })
-            .catch((error) => {
-                console.log('fetch data failed', error);
-            });
+        setData(response);
+        _dataRef.current = response;
+        // We remove baseline of assignee set as it is not really an assignee but we need to format data that way
+        const uniqueAssignees = getUnique(response, KEYS.assignee).filter((assignee) => assignee !== KEYS.baseline);
+        let assigneeFilters = {
+        };
+        uniqueAssignees.forEach((item) => {
+            assigneeFilters[item] = true;
+        });
+        setAssignees(assigneeFilters);
+        setColorKeys(assignColors(uniqueAssignees));
+        const maximumSeq = getMaximumSeq(response);
+        setSequenceRange({ min: 1, max: maximumSeq, length: maximumSeq });
     };
 
     const gridStyles = { 
