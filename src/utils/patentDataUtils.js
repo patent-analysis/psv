@@ -14,7 +14,6 @@ function getPatentData(proteinId){
         }
     };
 
-    console.log('Calling API', apiName, path, myInit)
     return API.get(apiName, path, myInit);
 }
 

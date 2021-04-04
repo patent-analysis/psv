@@ -17,6 +17,10 @@
         "psv670c5d1b": {}
       },
       "function": {
+        "patentsLambda": {
+          "deploymentBucketName": "amplify-psv-dev-10725-deployment",
+          "s3Key": "amplify-builds/patentsLambda-67774c347668716a3249-build.zip"
+        },
         "bioMoleculesLambda": {
           "deploymentBucketName": "amplify-psv-dev-10725-deployment",
           "s3Key": "amplify-builds/bioMoleculesLambda-61506e59756a4b734171-build.zip"
@@ -24,10 +28,6 @@
         "patentUploadsLambda": {
           "deploymentBucketName": "amplify-psv-dev-10725-deployment",
           "s3Key": "amplify-builds/patentUploadsLambda-75314a796d615073706e-build.zip"
-        },
-        "patentsLambda": {
-          "deploymentBucketName": "amplify-psv-dev-10725-deployment",
-          "s3Key": "amplify-builds/patentsLambda-67774c347668716a3249-build.zip"
         }
       }
     }

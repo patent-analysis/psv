@@ -45,10 +45,9 @@ const PatentVisualizer = props => {
 
     useEffect(() => {
         const proteinName = location.state.proteinName;
-        console.log('Fetching patent details for', proteinName)
         const patentData = getPatentData(proteinName);
         setPatentData(patentData);
-    }, []);
+    }, [location.state.proteinName]);
 
     // Filtering Effect
     const [assignees, setAssignees] = useState({});
