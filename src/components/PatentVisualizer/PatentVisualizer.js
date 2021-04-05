@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import 'antd/dist/antd.css';
 import './PatentVisualizer.css';
 import { CloseOutlined } from '@ant-design/icons';
-import { Heatmap } from '@ant-design/charts';
+import { Heatmap, G2 } from '@ant-design/charts';
 import { Layout, Button } from 'antd';
 import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
@@ -34,15 +34,47 @@ const getMaximumSeq = (patentArray) => {
     }, 0);
 }
 
+const G2DrawResidues = (details) => {
+    G2.registerShape('polygon', 'boundary-polygon', {
+        draw: function draw(cfg, container) {
+            const group = container.addGroup();
+            const points = cfg.points;
+            // Combination of all points surrounding the data
+            const path = [
+                ['M', points[0].x, points[0].y],
+                ['L', points[1].x, points[1].y],
+                ['L', points[2].x, points[2].y],
+                ['L', points[3].x, points[3].y],
+                ['Z'],
+            ];
+            const attrs = {
+                fill: cfg.color,
+                path: [],
+            };
+            attrs.path = this.parsePath(path);
+            group.addShape('path', { attrs: attrs });
+            // Use the sequence position of the last residue clicked
+            if (cfg.data[KEYS.sequencePosition] === details.seqPosition) {
+                group.addShape('path', {
+                    attrs: {
+                        path: this.parsePath(path),
+                        lineWidth: 4,
+                        stroke: '#404040',
+                    },
+                });
+            }
+            return group;
+        },
+    });
+}
 const PatentVisualizer = props => {
     const location = useLocation();
-
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
     const [showBaseline, setBaseline] = useState(false);
     const _dataRef = useRef([]);
-
+    G2DrawResidues(details);
     useEffect(() => {
         const proteinName = location.state.proteinName;
         (async function () {
@@ -112,6 +144,7 @@ const PatentVisualizer = props => {
         yAxis: gridStyles,
         yField: KEYS.patentNumber,
         colorField: KEYS.assignee,
+        shape: 'boundary-polygon',
         color: (assignee) => {
             if (assignee !== KEYS.baseline) {
                 return colorKeys[assignee];

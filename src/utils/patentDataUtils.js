@@ -13,7 +13,6 @@ function getPatentData(proteinId){
             'proteinId': proteinId
         }
     };
-
     return API.get(apiName, path, myInit);
 }
 
@@ -30,7 +29,7 @@ function getPatentData(proteinId){
  * WORKAROUND: We add the base sequence as a patent at the bottom of the chart. This way we will have an empty patent with every data point. We leverage this and we will use it to show the amino acid sequence
 */
 
-const amino = ['A', 'R', 'N', 'D'];
+const amino = ['A', 'R', 'N', 'D', 'G', 'C', 'P', 'S', 'Y', 'I'];
 function getRandomAmino(){
     return amino[Math.floor(Math.random() * amino.length)];
 }
