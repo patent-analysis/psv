@@ -2,19 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import 'antd/dist/antd.css';
 import './PatentVisualizer.css';
 import { CloseOutlined } from '@ant-design/icons';
-import { Heatmap } from '@ant-design/charts';
+import { Heatmap, G2 } from '@ant-design/charts';
 import { Layout, Button } from 'antd';
 import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
-import mock from '../../utils/mockResults';
+import { getPatentData, generateVisualizationDataset } from '../../utils/patentDataUtils';
+import { useLocation } from 'react-router-dom';
+
 const { Sider } = Layout;
 
 const KEYS = {
-    assignee: 'Assignee',
-    sequencePosition: 'Sequence Position',
-    patentNumber: 'Patent Number',
+    assignee: 'patentAssignees',
+    sequencePosition: 'sequencePosition',
+    patentNumber: 'patentNumber',
     claimed: 'Claimed',
     aminoAcid: 'Amino Acid',
     baseline: 'Sequence'
@@ -32,15 +34,54 @@ const getMaximumSeq = (patentArray) => {
     }, 0);
 }
 
-const PatentVisualizer = () => {
+const G2DrawResidues = (details) => {
+    G2.registerShape('polygon', 'boundary-polygon', {
+        draw: function draw(cfg, container) {
+            const group = container.addGroup();
+            const points = cfg.points;
+            // Combination of all points surrounding the data
+            const path = [
+                ['M', points[0].x, points[0].y],
+                ['L', points[1].x, points[1].y],
+                ['L', points[2].x, points[2].y],
+                ['L', points[3].x, points[3].y],
+                ['Z'],
+            ];
+            const attrs = {
+                fill: cfg.color,
+                path: [],
+            };
+            attrs.path = this.parsePath(path);
+            group.addShape('path', { attrs: attrs });
+            // Use the sequence position of the last residue clicked
+            if (cfg.data[KEYS.sequencePosition] === details.seqPosition) {
+                group.addShape('path', {
+                    attrs: {
+                        path: this.parsePath(path),
+                        lineWidth: 4,
+                        stroke: '#404040',
+                    },
+                });
+            }
+            return group;
+        },
+    });
+}
+const PatentVisualizer = props => {
+    const location = useLocation();
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
     const [showBaseline, setBaseline] = useState(false);
     const _dataRef = useRef([]);
+    G2DrawResidues(details);
     useEffect(() => {
-        asyncFetch();
-    }, []);
+        const proteinName = location.state.proteinName;
+        (async function () {
+            const patentData = await getPatentData(proteinName);
+            setPatentData(patentData);
+        })();
+    }, [location.state.proteinName]);
 
     // Filtering Effect
     const [assignees, setAssignees] = useState({});
@@ -58,29 +99,28 @@ const PatentVisualizer = () => {
             })
         );
     }, [assignees, sequenceRange, showBaseline]);
-    
 
-    const asyncFetch = () => {
-        Promise.resolve(mock)
-            .then((response) => {
-                setData(response);
-                _dataRef.current = response;
-                // We remove baseline of assignee set as it is not really an assignee but we need to format data that way
-                const uniqueAssignees = getUnique(response, KEYS.assignee).filter((assignee) => assignee !== KEYS.baseline);
-                let assigneeFilters = {
-                };
-                uniqueAssignees.forEach((item) => {
-                    assigneeFilters[item] = true;
-                });
-                setAssignees(assigneeFilters);
-                setColorKeys(assignColors(uniqueAssignees));
-                const maximumSeq = getMaximumSeq(response);
-                setSequenceRange({ min: 1, max: maximumSeq, length: maximumSeq });
-            })
-            .catch((error) => {
-                console.log('fetch data failed', error);
-            });
+    const setPatentData = (patentData) => {
+        console.debug('Patent Data: ', patentData)
+
+        //Generate individual data points for the heat map based on the patent data
+        const response = generateVisualizationDataset(patentData)
+
+        setData(response);
+        _dataRef.current = response;
+        // We remove baseline of assignee set as it is not really an assignee but we need to format data that way
+        const uniqueAssignees = getUnique(response, KEYS.assignee).filter((assignee) => assignee !== KEYS.baseline);
+        let assigneeFilters = {
+        };
+        uniqueAssignees.forEach((item) => {
+            assigneeFilters[item] = true;
+        });
+        setAssignees(assigneeFilters);
+        setColorKeys(assignColors(uniqueAssignees));
+        const maximumSeq = getMaximumSeq(response);
+        setSequenceRange({ min: 1, max: maximumSeq, length: maximumSeq });
     };
+
     const gridStyles = { 
         grid: {
             line: {
@@ -104,6 +144,7 @@ const PatentVisualizer = () => {
         yAxis: gridStyles,
         yField: KEYS.patentNumber,
         colorField: KEYS.assignee,
+        shape: 'boundary-polygon',
         color: (assignee) => {
             if (assignee !== KEYS.baseline) {
                 return colorKeys[assignee];
@@ -185,6 +226,7 @@ const PatentVisualizer = () => {
                 </Sider>
                 }
             </Layout>,
+            //TODO: PatentTable to be populated with $patentData 
             <PatentTable />
         ]
     )
