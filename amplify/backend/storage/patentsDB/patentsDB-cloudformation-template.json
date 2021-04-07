@@ -11,7 +11,6 @@
         "env": {
             "Type": "String"
         },
-        
         "tableName": {
             "Type": "String"
         }
@@ -31,20 +30,98 @@
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
                 "AttributeDefinitions": [
-                  
-                  {
-                      "AttributeName": "patentNumber",
-                      "AttributeType": "S"
-                  } 
-                  
+                    {
+                        "AttributeName": "patentNumber",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "patentName",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "proteinId",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "claimedResidues",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "applicants",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "patentAssignees",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "inventors",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "examiners",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "legalOpinion",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "legalStatus",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "appNumber",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "appDate",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "claimsCount",
+                        "AttributeType": "N"
+                    },
+                    {
+                        "AttributeName": "sequenceCount",
+                        "AttributeType": "N"
+                    },
+                    {
+                        "AttributeName": "patentFileDate",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "createdDate",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "patentDocPath",
+                        "AttributeType": "S"
+                    }
                 ],
                 "KeySchema": [
-                  
-                  {
-                    "AttributeName": "patentNumber",
-                    "KeyType": "HASH"
-                  } 
-                  
+                    {
+                        "AttributeName": "patentNumber",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "GlobalSecondaryIndexes": [
+                    {
+                        "IndexName": "proteinId-index",
+                        "KeySchema": [
+                            {
+                                "AttributeName": "proteinId",
+                                "KeyType": "HASH"
+                            }
+                        ],
+                        "Projection": {
+                            "ProjectionType": "ALL"
+                        },
+                        "ProvisionedThroughput": {
+                            "ReadCapacityUnits": 5,
+                            "WriteCapacityUnits": 5
+                        }
+                    }
                 ],
                 "ProvisionedThroughput": {
                     "ReadCapacityUnits": "5",
@@ -57,26 +134,24 @@
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         {
-                           "Ref": "tableName"
-                        }, 
+                            "Ref": "tableName"
+                        },
                         {
-
                             "Fn::Join": [
                                 "",
                                 [
-                                  {
-                                    "Ref": "tableName"
-                                  },
-                                  "-",
-                                  {
-                                    "Ref": "env"
-                                  }
+                                    {
+                                        "Ref": "tableName"
+                                    },
+                                    "-",
+                                    {
+                                        "Ref": "env"
+                                    }
                                 ]
                             ]
                         }
                     ]
                 }
-                
             }
         }
     },
@@ -112,7 +187,6 @@
                 "Ref": "partitionKeyType"
             }
         },
-        
         "Region": {
             "Value": {
                 "Ref": "AWS::Region"
