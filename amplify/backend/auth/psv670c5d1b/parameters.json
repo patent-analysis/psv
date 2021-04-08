@@ -1,6 +1,6 @@
 {
     "identityPoolName": "psv670c5d1b_identitypool_670c5d1b",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "psv670c5d1b",
     "userPoolName": "psv670c5d1b_userpool_670c5d1b",
     "autoVerifiedAttributes": [

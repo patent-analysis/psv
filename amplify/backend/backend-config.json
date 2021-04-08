@@ -7,6 +7,10 @@
     "bioMoleculesDB": {
       "service": "DynamoDB",
       "providerPlugin": "awscloudformation"
+    },
+    "psvpatents3": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
     }
   },
   "function": {
