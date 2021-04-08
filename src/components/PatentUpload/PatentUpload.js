@@ -20,7 +20,7 @@ class PatentUpload extends Component {
           alert('Please enter or select the Protein name');
           return false;
       }
-      if (proteinName.value.match(/\W/)) {
+      if (proteinName.value.match(/\W-_/)) {
           alert('Please do not include special characters');
           return false;
       }
