@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Layout, Menu, Checkbox, Slider, InputNumber } from 'antd';
 import 'antd/dist/antd.css';
 import { UserOutlined } from '@ant-design/icons';
@@ -10,8 +11,9 @@ const renderCheckboxList = (filterObject, onChange, colorKeys) => {
     return Object.keys(filterObject).map((key, index) => {
         return (
             <Menu.Item key={index}>
+                {colorKeys[key] && <ColorSquare color={colorKeys[key]} />}
                 <Checkbox onChange={(e) => onChange(e, key)} checked={filterObject[key]}>
-                    {key} {colorKeys[key] && <ColorSquare color={colorKeys[key]} />}
+                    {key}
                 </Checkbox>
             </Menu.Item>
         );
@@ -50,9 +52,36 @@ const renderSequenceFilter = (min, max, length, onSequenceRangeFilterChange) => 
 const PatentVisualizerSidebar = (props) => {
     const { onSequenceRangeFilterChange, sequenceRange } = props;
     const { min, max, length } = sequenceRange;
+    const [siderWidth, setSiderWidth] = useState(300);
+    let isDragging = false;
 
+    const MIN_SIDER_WIDTH = 100;
     return (
-        <Sider width={'15%'} className="site-layout-background">
+        <Sider width={siderWidth} className="site-layout-background">
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                height: '100%',
+                width: 20,
+                cursor: 'ew-resize'
+            }}
+            onMouseDown={() => {
+                isDragging = true;
+                document.onmousemove = (e) => {
+                    if(isDragging) {
+                        // pageX is returning a higher number than the edge of our sider so we offset by
+                        // an arbitrary 30px to make it smoother
+                        setSiderWidth(e.pageX > MIN_SIDER_WIDTH ? e.pageX - 30: MIN_SIDER_WIDTH);
+                    }
+                    return false;
+                }
+                document.onmouseup = () => {
+                    isDragging = false;
+                    document.onmousemove = undefined;
+                }
+            }}
+            />
             <Menu
                 mode="inline"
                 defaultSelectedKeys={['1']}
