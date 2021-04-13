@@ -54,7 +54,7 @@ const G2DrawResidues = (details) => {
             attrs.path = this.parsePath(path);
             group.addShape('path', { attrs: attrs });
             // Use the sequence position of the last residue clicked
-            if (cfg.data[KEYS.sequencePosition] === details.seqPosition) {
+            if (cfg.data[KEYS.sequencePosition] === details.seqPosition && details.show) {
                 group.addShape('path', {
                     attrs: {
                         path: this.parsePath(path),
@@ -121,7 +121,7 @@ const PatentVisualizer = props => {
         setSequenceRange({ min: 1, max: maximumSeq, length: maximumSeq });
     };
 
-    const gridStyles = { 
+    const gridStyles = {
         grid: {
             line: {
                 style: {
@@ -135,9 +135,9 @@ const PatentVisualizer = props => {
     }
 
     const config = {
-        width: 650,
-        height: 500,
-        autoFit: true,
+        width: 3000,
+        height: 600,
+        autoFit: false,
         data: data,
         xField: KEYS.sequencePosition,
         xAxis: gridStyles,
@@ -206,7 +206,7 @@ const PatentVisualizer = props => {
                     onSequenceRangeFilterChange={onSequenceRangeFilterChange}
                     toggleBaseline={toggleBaseline}
                 />
-                <Layout style={{ padding: '24px' }}>
+                <Layout style={{ padding: '24px', overflow: 'auto' }}>
                     <Heatmap onEvent={onEvent} {...config} />
                 </Layout>
                 {details.show && 
