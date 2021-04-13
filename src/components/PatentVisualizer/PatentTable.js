@@ -1,43 +1,44 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { Table, Tag, Space } from 'antd';
+import { Table, Space } from 'antd';
+import StringManager from '../../utils/StringManager';
 
+
+// claimedResidues: "197, 237, 238, 239, 367, 369"
+// patentAssignees: "Regeneron Pharmaceuticals, Inc.,Tarrytown, NY (US)"
+// patentDate: "2016-07-12"
+// patentFiled: "2009-12-15"
+// patentLegalOpinion: ""
+// patentName: "BEST ANTIBODIES TO PCSK9"
+// patentNumber: "US00801234567"
+// patentSeqListing: "PCSK9_SeqList"
+// patentSequences 0: {epitopeResidues: "153, 159, 238, 343, 366", seqId: "755"}
 const columns = [
     {
-        title: 'Patent Number',
-        dataIndex: 'name',
-        key: 'name',
+        title: StringManager.get('patentNumber'),
+        dataIndex: 'patentNumber',
+        key: 'patentNumber',
         render: text => <a href="/">{text}</a>,
     },
     {
-        title: 'Issue Date',
-        dataIndex: 'age',
-        key: 'age',
+        title: StringManager.get('patentName'),
+        dataIndex: 'patentName',
+        key: 'patentName',
     },
     {
-        title: 'Assignee',
-        dataIndex: 'address',
-        key: 'address',
+        title: StringManager.get('issueDate'),
+        dataIndex: 'patentDate',
+        key: 'patentDate',
     },
     {
-        title: 'Tags',
-        key: 'tags',
-        dataIndex: 'tags',
-        render: tags => (
-            <>
-                {tags.map(tag => {
-                    let color = tag.length > 5 ? 'geekblue' : 'green';
-                    if (tag === 'soon to expire') {
-                        color = 'volcano';
-                    }
-                    return (
-                        <Tag color={color} key={tag}>
-                            {tag.toUpperCase()}
-                        </Tag>
-                    );
-                })}
-            </>
-        ),
+        title: StringManager.get('assignee'),
+        dataIndex: 'patentAssignees',
+        key: 'patentAssignees',
+    },
+    {
+        title: StringManager.get('claimedResidues'),
+        dataIndex: 'claimedResidues',
+        key: 'claimedResidues',
     },
     {
         title: 'Action',
@@ -51,31 +52,8 @@ const columns = [
     },
 ];
 
-const data = [
-    {
-        key: '1',
-        name: '11223333',
-        age: '02/01/01',
-        address: 'Pfizer',
-        tags: ['new', 'in court'],
-    },
-    {
-        key: '2',
-        name: '11223567',
-        age: '02/01/01',
-        address: 'Amgen',
-        tags: ['other attr'],
-    },
-    {
-        key: '3',
-        name: '71223567',
-        age: '01/01/01',
-        address: 'Regeneron',
-        tags: ['soon to expire', 'attribute'],
-    },
-];
-const PatentTable= () => {
-    return <Table columns={columns} dataSource={data} />
+const PatentTable= (props) => {
+    return <Table columns={columns} dataSource={props.patentData} />
 }
 
 export default PatentTable;

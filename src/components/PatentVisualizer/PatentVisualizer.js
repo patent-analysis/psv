@@ -73,6 +73,7 @@ const PatentVisualizer = props => {
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
     const [showBaseline, setBaseline] = useState(false);
+    const [tableDetails, setTableDetails] = useState([]);
     const _dataRef = useRef([]);
     G2DrawResidues(details);
     useEffect(() => {
@@ -101,9 +102,9 @@ const PatentVisualizer = props => {
     }, [assignees, sequenceRange, showBaseline]);
 
     const setPatentData = (patentData) => {
-        console.debug('Patent Data: ', patentData)
+        setTableDetails(patentData);
 
-        //Generate individual data points for the heat map based on the patent data
+        // Generate individual data points for the heat map based on the patent data
         const response = generateVisualizationDataset(patentData)
 
         setData(response);
@@ -226,8 +227,7 @@ const PatentVisualizer = props => {
                 </Sider>
                 }
             </Layout>,
-            //TODO: PatentTable to be populated with $patentData 
-            <PatentTable />
+            <PatentTable patentData={tableDetails} />
         ]
     )
 };
