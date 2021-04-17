@@ -27,10 +27,6 @@
         "patentUploadsLambda": {
           "deploymentBucketName": "amplify-psv-dev-10725-deployment",
           "s3Key": "amplify-builds/patentUploadsLambda-75314a796d615073706e-build.zip"
-        },
-        "metadataLambda": {
-          "deploymentBucketName": "amplify-psv-dev-10725-deployment",
-          "s3Key": "amplify-builds/metadataLambda-2f32734b4c7a6a726336-build.zip"
         }
       }
     }

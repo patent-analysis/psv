@@ -1,7 +1,0 @@
-{
-    "tableName": "patentUploadMeta",
-    "partitionKeyName": "patentName",
-    "partitionKeyType": "S",
-    "sortKeyName": "uploader",
-    "sortKeyType": "S"
-}
