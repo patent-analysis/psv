@@ -11,6 +11,10 @@
     "psvpatents3": {
       "service": "S3",
       "providerPlugin": "awscloudformation"
+    },
+    "patentUploadMeta": {
+      "service": "DynamoDB",
+      "providerPlugin": "awscloudformation"
     }
   },
   "function": {
@@ -56,6 +60,25 @@
           }
         }
       ]
+    },
+    "metadataLambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "storage",
+          "resourceName": "patentUploadMeta",
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "attributeEnvMap": {
+            "Name": "TABLE_NAME",
+            "Arn": "TABLE_ARN"
+          }
+        }
+      ]
     }
   },
   "api": {
@@ -80,6 +103,20 @@
         {
           "category": "function",
           "resourceName": "patentsLambda",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ]
+    },
+    "metadataUploads": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "metadataLambda",
           "attributes": [
             "Name",
             "Arn"
