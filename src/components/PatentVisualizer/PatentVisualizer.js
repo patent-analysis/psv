@@ -73,6 +73,7 @@ const PatentVisualizer = props => {
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
     const [showBaseline, setBaseline] = useState(false);
+    const [tableDetails, setTableDetails] = useState([]);
     const _dataRef = useRef([]);
     G2DrawResidues(details);
     useEffect(() => {
@@ -86,6 +87,7 @@ const PatentVisualizer = props => {
     // Filtering Effect
     const [assignees, setAssignees] = useState({});
     const [sequenceRange, setSequenceRange] = useState({ min: 1, max: 1, length: 1 });
+    const [displayedPatents, setDisplayedPatents] = useState({});
     useEffect(() => {
         setData(_dataRef.current
             // By Assignee
@@ -97,13 +99,21 @@ const PatentVisualizer = props => {
             .filter((patentData) => {
                 return sequenceRange.min <= patentData[KEYS.sequencePosition] && patentData[KEYS.sequencePosition] <= sequenceRange.max;
             })
+            // By Patent Number
+            .filter((patentData) => {
+                return displayedPatents[patentData.patentNumber] || patentData.patentNumber === KEYS.baseline; 
+            })
         );
-    }, [assignees, sequenceRange, showBaseline]);
+    }, [assignees, sequenceRange, showBaseline, displayedPatents]);
 
     const setPatentData = (patentData) => {
-        console.debug('Patent Data: ', patentData)
-
-        //Generate individual data points for the heat map based on the patent data
+        // Create object using patent numbers as keys: { US00801234567: true, US008065732AA: true }
+        const patentNumbers = patentData.reduce((prev, current) => {
+            return { ...prev, [current.patentNumber]: true }
+        }, {})
+        setTableDetails(patentData);
+        setDisplayedPatents(patentNumbers);
+        // Generate individual data points for the heat map based on the patent data
         const response = generateVisualizationDataset(patentData)
 
         setData(response);
@@ -169,7 +179,7 @@ const PatentVisualizer = props => {
         meta: { [KEYS.patentNumber] : { type: 'cat' } },
     };
     
-    const onEvent = (chart, event) => {
+    const onEvent = (__chart, event) => {
         // If event.data is not available user clicked on empty tile of heatmap
         if(event.type === 'click' && event.data) {
             setDetails({
@@ -191,6 +201,14 @@ const PatentVisualizer = props => {
         setSequenceRange({
             ...sequenceRange,
             ...newRange
+        });
+    }
+
+    const onPatentNumberFilterChange = (patentNumber) => {
+        // We toggle the state of the patent number clicked
+        setDisplayedPatents({
+            ...displayedPatents,
+            [patentNumber]: !displayedPatents[patentNumber]
         });
     }
 
@@ -226,8 +244,7 @@ const PatentVisualizer = props => {
                 </Sider>
                 }
             </Layout>,
-            //TODO: PatentTable to be populated with $patentData 
-            <PatentTable />
+            <PatentTable patentData={tableDetails} onPatentNumberFilterChange={onPatentNumberFilterChange} displayedPatents={displayedPatents} />
         ]
     )
 };

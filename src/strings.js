@@ -9,7 +9,12 @@ const strings = {
     filterBySequencePosition: 'Filter By Sequence Position',
     minLabel: 'Min:',
     maxLabel: 'Max:',
-    showAminoSequence: 'Show Amino Acid Sequence'
+    showAminoSequence: 'Show Amino Acid Sequence',
+    claimedResidues: 'Claimed Residues',
+    assignee: 'Assignee',
+    patentName: 'Patent Name',
+    patentNumber: 'Patent Number',
+    issueDate: 'Issue Data'
 }
 
 export default Object.freeze(strings);
