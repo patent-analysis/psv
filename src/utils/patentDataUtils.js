@@ -16,6 +16,17 @@ function getPatentData(proteinId){
     return API.get(apiName, path, myInit);
 }
 
+function savePatentData(data){
+    const apiName = 'patentsAPI';
+    const path = '/patents';
+    const myInit = {
+        headers : {},
+        response: false,
+        body: data
+    };
+    return API.put(apiName, path, myInit);
+}
+
 
 /* 
  * The current heatmap component does not have a simple way to show data the way we want it where we want the full table of sequences from 0 - n and
@@ -97,5 +108,6 @@ function generateVisualizationDataset(patentData) {
 
 export {
     getPatentData,
-    generateVisualizationDataset
+    generateVisualizationDataset,
+    savePatentData
 };

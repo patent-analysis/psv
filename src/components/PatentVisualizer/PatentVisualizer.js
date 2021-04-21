@@ -8,8 +8,9 @@ import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
-import { getPatentData, generateVisualizationDataset } from '../../utils/patentDataUtils';
+import { getPatentData, generateVisualizationDataset, savePatentData } from '../../utils/patentDataUtils';
 import { useLocation } from 'react-router-dom';
+import EditModalDialog from '../EditDataModal/EditDataModal'
 
 const { Sider } = Layout;
 
@@ -19,20 +20,23 @@ const KEYS = {
     patentNumber: 'patentNumber',
     claimed: 'Claimed',
     aminoAcid: 'Amino Acid',
-    baseline: 'Sequence'
+    baseline: 'Sequence',
+    patentName: 'Patent Name',
+    patentFiled: 'Patent Filed',
 }
 Object.freeze(KEYS);
 
 const getMaximumSeq = (patentArray) => {
     return patentArray.reduce((max, current) => {
         const seqPosition = parseInt(current[KEYS.sequencePosition]);
-        if(seqPosition > max) {
+        if (seqPosition > max) {
             return seqPosition;
         } else {
             return max;
         }
     }, 0);
 }
+
 
 const G2DrawResidues = (details) => {
     G2.registerShape('polygon', 'boundary-polygon', {
@@ -67,6 +71,9 @@ const G2DrawResidues = (details) => {
         },
     });
 }
+
+let patData = [];
+
 const PatentVisualizer = props => {
     const location = useLocation();
     const [data, setData] = useState([]);
@@ -74,6 +81,7 @@ const PatentVisualizer = props => {
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
     const [showBaseline, setBaseline] = useState(false);
     const _dataRef = useRef([]);
+    const [modalShow, setModalShow] = React.useState(false);
     G2DrawResidues(details);
     useEffect(() => {
         const proteinName = location.state.proteinName;
@@ -101,8 +109,8 @@ const PatentVisualizer = props => {
     }, [assignees, sequenceRange, showBaseline]);
 
     const setPatentData = (patentData) => {
-        console.debug('Patent Data: ', patentData)
-
+        console.debug('Patent Data: ', patentData);
+        patData = JSON.parse(JSON.stringify(patentData))
         //Generate individual data points for the heat map based on the patent data
         const response = generateVisualizationDataset(patentData)
 
@@ -160,23 +168,31 @@ const PatentVisualizer = props => {
                 shadowColor: 'rgba(0, 0, 0, .45)',
             },
             formatter: (residueData) => {
-                if(residueData[KEYS.patentNumber] === KEYS.baseline && showBaseline) {
+                if (residueData[KEYS.patentNumber] === KEYS.baseline && showBaseline) {
                     return residueData[KEYS.aminoAcid];
                 }
             }
         },
         showContent: true,
-        meta: { [KEYS.patentNumber] : { type: 'cat' } },
+        meta: { [KEYS.patentNumber]: { type: 'cat' } },
     };
-    
+
     const onEvent = (chart, event) => {
         // If event.data is not available user clicked on empty tile of heatmap
-        if(event.type === 'click' && event.data) {
+        if (event.type === 'click' && event.data) {
+            let pat = patData.find(p => p.patentNumber === event.data.data[KEYS.patentNumber]);
+
             setDetails({
                 show: true,
                 patentId: event.data.data[KEYS.patentNumber],
                 assignee: event.data.data[KEYS.assignee],
-                seqPosition: event.data.data[KEYS.sequencePosition]
+                seqPosition: event.data.data[KEYS.sequencePosition],
+                patentName: pat.patentName,
+                patentFiled: pat.patentFiled,
+                aminoAcid: event.data.data[KEYS.aminoAcid],
+                claimed: event.data.data[KEYS.claimed],
+                patentLegalOpinion: pat.patentLegalOpinion,
+                patentDate: pat.patentDate
             });
         }
     }
@@ -198,32 +214,63 @@ const PatentVisualizer = props => {
         setBaseline(e.target.checked);
     }
 
+    const patentEditSubmit = () => {
+        let pat = patData.find(p => p.patentNumber === details.patentId);
+        let residues = pat.claimedResidues.split(',').map(s => s.trim());
+
+        if (residues.includes(details.seqPosition)) {
+            if (!details.claimed) {
+                pat.claimedResidues = residues.filter(v => v !== details.seqPosition).join(', ');
+            }
+        } else {
+            if (details.claimed) {
+                residues.push(details.seqPosition);
+                pat.claimedResidues = residues.join(', ');
+            }
+        }
+
+        pat.patentAssignees = details.assignee;
+        pat.patentName = details.patentName;
+        pat.patentFiled = details.patentFiled;
+        pat.patentDate = details.patentDate;
+        pat.patentLegalOpinion = details.patentLegalOpinion;
+        savePatentData(pat);
+        setModalShow(false);
+    }
+
     return (
         [
             <Layout>
+                {modalShow && <EditModalDialog
+                    isOpen={modalShow}
+                    onHide={() => setModalShow(false)}
+                    patentDetails={details}
+                    onPatentEditSubmit={() => patentEditSubmit()}
+                />}
                 <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length} showBaseline={showBaseline}
-                    onAssigneeFilterChange={onAssigneeFilterChange} 
+                    onAssigneeFilterChange={onAssigneeFilterChange}
                     onSequenceRangeFilterChange={onSequenceRangeFilterChange}
                     toggleBaseline={toggleBaseline}
                 />
                 <Layout style={{ padding: '24px', overflow: 'auto' }}>
                     <Heatmap onEvent={onEvent} {...config} />
                 </Layout>
-                {details.show && 
-                <Sider className="site-layout-background" theme="light" width={200} style={{ padding: '20px' }}>
-                    <CloseOutlined className="visualizer__details-sider-icon" 
-                        onClick={() => setDetails({ ...details, show: false })}
-                    />
-                    <div>Patent Name: {details.patentId}</div>
-                    <div>Sequence Index - Name: {details.seqPosition}</div>
-                    <div>Assignee: {details.assignee}</div>
-                    <div>Other relevant data: </div>
-                    <div>Link to PDF</div>
-                    <div>Text extracted</div>
-                    <div className="visualizer__edit-button-container">
-                        <Button type="primary">Edit Data</Button>
-                    </div>
-                </Sider>
+                {details.show &&
+                    <Sider className="site-layout-background" theme="light" width={200} style={{ padding: '20px' }}>
+                        <CloseOutlined className="visualizer__details-sider-icon"
+                            onClick={() => setDetails({ ...details, show: false })}
+                        />
+                        <div>Patent Name: {details.patentId}</div>
+                        <div>Sequence Index - Name: {details.seqPosition}</div>
+                        <div>Assignee: {details.assignee}</div>
+                        <div>Other relevant data: </div>
+                        <div>Link to PDF</div>
+                        <div>Text extracted</div>
+                        <div className="visualizer__edit-button-container">
+                            <Button type="primary" onClick={() => setModalShow(true)}>Edit Data</Button>
+
+                        </div>
+                    </Sider>
                 }
             </Layout>,
             //TODO: PatentTable to be populated with $patentData 
