@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Layout, Menu, Checkbox, Slider, InputNumber } from 'antd';
 import 'antd/dist/antd.css';
+import './PatentVisualizer.css';
 import { UserOutlined } from '@ant-design/icons';
 import StringManager from '../../utils/StringManager';
 import ColorSquare from './ColorSquare';
@@ -58,29 +59,31 @@ const PatentVisualizerSidebar = (props) => {
     const MIN_SIDER_WIDTH = 100;
     return (
         <Sider width={siderWidth} className="site-layout-background">
-            <div style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                height: '100%',
-                width: 20,
-                cursor: 'ew-resize'
-            }}
-            onMouseDown={() => {
-                isDragging = true;
-                document.onmousemove = (e) => {
-                    if(isDragging) {
+            <div className="visualizer__sidebar__expander" 
+            // style={{
+            //     position: 'absolute',
+            //     top: 0,
+            //     right: 0,
+            //     height: '100%',
+            //     width: 20,
+            //     cursor: 'ew-resize',
+            //     zIndex: 1
+            // }}
+                onMouseDown={() => {
+                    isDragging = true;
+                    document.onmousemove = (e) => {
+                        if(isDragging) {
                         // pageX is returning a higher number than the edge of our sider so we offset by
                         // an arbitrary 30px to make it smoother
-                        setSiderWidth(e.pageX > MIN_SIDER_WIDTH ? e.pageX - 30: MIN_SIDER_WIDTH);
+                            setSiderWidth(e.pageX > MIN_SIDER_WIDTH ? e.pageX - 30: MIN_SIDER_WIDTH);
+                        }
+                        return false;
                     }
-                    return false;
-                }
-                document.onmouseup = () => {
-                    isDragging = false;
-                    document.onmousemove = undefined;
-                }
-            }}
+                    document.onmouseup = () => {
+                        isDragging = false;
+                        document.onmousemove = undefined;
+                    }
+                }}
             />
             <Menu
                 mode="inline"
