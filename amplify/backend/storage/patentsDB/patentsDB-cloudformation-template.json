@@ -35,71 +35,7 @@
                         "AttributeType": "S"
                     },
                     {
-                        "AttributeName": "patentName",
-                        "AttributeType": "S"
-                    },
-                    {
                         "AttributeName": "proteinId",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "claimedResidues",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "applicants",
-                        "AttributeType": "SS"
-                    },
-                    {
-                        "AttributeName": "patentAssignees",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "inventors",
-                        "AttributeType": "SS"
-                    },
-                    {
-                        "AttributeName": "examiners",
-                        "AttributeType": "SS"
-                    },
-                    {
-                        "AttributeName": "legalOpinion",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "legalStatus",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "appNumber",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "appDate",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "claimsCount",
-                        "AttributeType": "N"
-                    },
-                    {
-                        "AttributeName": "sequenceCount",
-                        "AttributeType": "N"
-                    },
-                    {
-                        "AttributeName": "patentFileDate",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "createdDate",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "relatedDocs",
-                        "AttributeType": "SS"
-                    },
-                    {
-                        "AttributeName": "patentDocPath",
                         "AttributeType": "S"
                     }
                 ],
@@ -107,15 +43,11 @@
                     {
                         "AttributeName": "patentNumber",
                         "KeyType": "HASH"
-                    },
-                    {
-                        "AttributeName": "proteinId",
-                        "KeyType": "HASH"
                     }
                 ],
                 "GlobalSecondaryIndexes": [
                     {
-                        "IndexName": "proteinId-index",
+                        "IndexName": "IDX",
                         "KeySchema": [
                             {
                                 "AttributeName": "proteinId",
@@ -123,7 +55,7 @@
                             }
                         ],
                         "Projection": {
-                            "ProjectionType": "ALL"
+                            "ProjectionType": "KEYS_ONLY"
                         },
                         "ProvisionedThroughput": {
                             "ReadCapacityUnits": 5,
