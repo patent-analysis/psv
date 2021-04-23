@@ -48,7 +48,7 @@
                     },
                     {
                         "AttributeName": "applicants",
-                        "AttributeType": "S"
+                        "AttributeType": "SS"
                     },
                     {
                         "AttributeName": "patentAssignees",
@@ -56,11 +56,11 @@
                     },
                     {
                         "AttributeName": "inventors",
-                        "AttributeType": "S"
+                        "AttributeType": "SS"
                     },
                     {
                         "AttributeName": "examiners",
-                        "AttributeType": "S"
+                        "AttributeType": "SS"
                     },
                     {
                         "AttributeName": "legalOpinion",
@@ -93,6 +93,10 @@
                     {
                         "AttributeName": "createdDate",
                         "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "relatedDocs",
+                        "AttributeType": "SS"
                     },
                     {
                         "AttributeName": "patentDocPath",
