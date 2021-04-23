@@ -46,6 +46,29 @@ for (let i = 1; i <= MAX_SEQ_LENGTH; i++) {
     })
 }
 
+// We require to sort the data in a specific way in order to visualize correctly.
+// The main requirement is that we have the full sequence at the beginning of the array
+// If we ever include every position on each patent we can remove this requirement as every patent
+// Would contain the full sequence
+function sortDataset(dataset) {
+    return dataset.sort((a, b) => {
+        if(parseInt(a['sequencePosition']) < parseInt(b['sequencePosition'])) {
+            return -1;
+        } else if (parseInt(a['sequencePosition']) > parseInt(b['sequencePosition'])) {
+            return 1;
+        } else {
+            if (a['patentNumber'] === 'Sequence') {
+                return -1;
+            }
+            if(parseInt(a['patentNumber']) < parseInt(b['patentNumber'])) {
+                return -1;
+            } else if (parseInt(a['patentNumber']) > parseInt(b['patentNumber'])) {
+                return 1;
+            }
+        }
+        return 0;
+    });
+}
 
 function generateVisualizationDataset(patentData) {
     /**
@@ -76,26 +99,11 @@ function generateVisualizationDataset(patentData) {
         
     });
 
-    return visualizationDataset.concat(baseline).sort((a, b) => {
-        if(parseInt(a['sequencePosition']) < parseInt(b['sequencePosition'])) {
-            return -1;
-        } else if (parseInt(a['sequencePosition']) > parseInt(b['sequencePosition'])) {
-            return 1;
-        } else {
-            if (a['patentNumber'] === 'Sequence') {
-                return -1;
-            }
-            if(parseInt(a['patentNumber']) < parseInt(b['patentNumber'])) {
-                return -1;
-            } else if (parseInt(a['patentNumber']) > parseInt(b['patentNumber'])) {
-                return 1;
-            }
-        }
-        return 0;
-    });
+    return sortDataset(visualizationDataset.concat(baseline));
 }
 
 export {
     getPatentData,
-    generateVisualizationDataset
+    generateVisualizationDataset,
+    sortDataset
 };

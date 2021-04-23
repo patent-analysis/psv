@@ -3,12 +3,12 @@ import 'antd/dist/antd.css';
 import './PatentVisualizer.css';
 import { CloseOutlined } from '@ant-design/icons';
 import { Heatmap, G2 } from '@ant-design/charts';
-import { Layout, Button } from 'antd';
+import { Layout, Button, Spin } from 'antd';
 import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
-import { getPatentData, generateVisualizationDataset } from '../../utils/patentDataUtils';
+import { getPatentData, generateVisualizationDataset, sortDataset } from '../../utils/patentDataUtils';
 import { useLocation } from 'react-router-dom';
 
 const { Sider } = Layout;
@@ -32,6 +32,16 @@ const getMaximumSeq = (patentArray) => {
             return max;
         }
     }, 0);
+}
+const sequenceStringToArray = (seqString, name) => {
+    return seqString.split('').map((char, index) => {
+        return {
+            'patentNumber': `${KEYS.baseline}_${name}`,
+            'patentAssignees': KEYS.baseline,
+            'sequencePosition': (index + 1).toString(),
+            'Amino Acid': char
+        }
+    });
 }
 
 const G2DrawResidues = (details) => {
@@ -74,12 +84,16 @@ const PatentVisualizer = props => {
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
     const [showBaseline, setBaseline] = useState(false);
     const [tableDetails, setTableDetails] = useState([]);
+    const [loading, isLoading] = useState(true);
+    const [manualSequenceList, setManualSequenceList] = useState([]);
+
     const _dataRef = useRef([]);
     G2DrawResidues(details);
     useEffect(() => {
         const proteinName = location.state.proteinName;
         (async function () {
             const patentData = await getPatentData(proteinName);
+            isLoading(false);
             setPatentData(patentData);
         })();
     }, [location.state.proteinName]);
@@ -101,10 +115,15 @@ const PatentVisualizer = props => {
             })
             // By Patent Number
             .filter((patentData) => {
-                return displayedPatents[patentData.patentNumber] || patentData.patentNumber === KEYS.baseline; 
+                return displayedPatents[patentData.patentNumber] || patentData.patentNumber.includes(KEYS.baseline); 
+            })
+            // By Manual Sequence Name
+            .filter((patentData) => {
+                const findSeq = manualSequenceList.find(elem => `${KEYS.baseline}_${elem.name}` === patentData.patentNumber);
+                return findSeq !== undefined ? findSeq.show : true;
             })
         );
-    }, [assignees, sequenceRange, showBaseline, displayedPatents]);
+    }, [assignees, sequenceRange, showBaseline, displayedPatents, manualSequenceList]);
 
     const setPatentData = (patentData) => {
         // Create object using patent numbers as keys: { US00801234567: true, US008065732AA: true }
@@ -170,7 +189,7 @@ const PatentVisualizer = props => {
                 shadowColor: 'rgba(0, 0, 0, .45)',
             },
             formatter: (residueData) => {
-                if(residueData[KEYS.patentNumber] === KEYS.baseline && showBaseline) {
+                if(residueData[KEYS.patentNumber].includes(KEYS.baseline) && showBaseline) {
                     return residueData[KEYS.aminoAcid];
                 }
             }
@@ -216,13 +235,40 @@ const PatentVisualizer = props => {
         setBaseline(e.target.checked);
     }
 
+    const addManualSequence = (sequence = '', name) => {
+        // Sequence is passed as a String, we need to format the data to send to the chart
+        const newSequence = sequenceStringToArray(sequence, name);
+        // Sort data to make sure manual sequences are shown at the bottom of the chart
+        const newDataset = sortDataset(data.concat(newSequence));
+        setData(newDataset);
+        setManualSequenceList([...manualSequenceList, { show: true, name }]);
+        _dataRef.current = newDataset;
+    }
+
+    const toggleManualSeq = (seqName, toggle) => {
+        const newSeqList = manualSequenceList.map((seq) => {
+            return seqName === seq.name ? { show: toggle, name: seq.name } : seq;
+        });
+        setManualSequenceList(newSeqList);
+    }
+
     return (
         [
             <Layout>
+                <Spin style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%'
+                }} tip={'Loading...'} 
+                spinning={loading}>
+                </Spin>
                 <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length} showBaseline={showBaseline}
+                    manualSequenceList={manualSequenceList}
+                    toggleManualSeq={toggleManualSeq}
                     onAssigneeFilterChange={onAssigneeFilterChange} 
                     onSequenceRangeFilterChange={onSequenceRangeFilterChange}
                     toggleBaseline={toggleBaseline}
+                    addManualSequence={addManualSequence}
                 />
                 <Layout style={{ padding: '24px', overflow: 'auto' }}>
                     <Heatmap onEvent={onEvent} {...config} />

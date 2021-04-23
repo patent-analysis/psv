@@ -4,7 +4,7 @@ const strings = {
     uploadPatents: 'Upload Patents',
     selectEpitope: 'Sequence',
     selectProtein: 'Protein Name',
-    appOwnershipFooter: 'Patent Visualization App - Created by The Avengers',
+    appOwnershipFooter: 'Patent Visualization App - Created by OpenPSV',
     filterByAssignee: 'Filter By Assignee',
     filterBySequencePosition: 'Filter By Sequence Position',
     minLabel: 'Min:',
@@ -14,7 +14,12 @@ const strings = {
     assignee: 'Assignee',
     patentName: 'Patent Name',
     patentNumber: 'Patent Number',
-    issueDate: 'Issue Data'
+    issueDate: 'Issue Data',
+    tooltipSeqName: 'Text to display on the Y-axis',
+    tooltipSeqExample: 'One character sequence. Example: IRNISNPN..',
+    addSeq: 'Add Sequence',
+    seqName: 'Sequence Name',
+    add: 'Add'
 }
 
 export default Object.freeze(strings);
