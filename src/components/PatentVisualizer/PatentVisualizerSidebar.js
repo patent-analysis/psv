@@ -42,7 +42,7 @@ const renderInputNumber = (value, label, onChange) => {
 const renderSequenceFilter = (min, max, length, onSequenceRangeFilterChange) => {
     return (
         [
-            <Slider key={'slider1'} style={{ width: '80%', margin: 'auto', padding: '25px 0px' }} range value={[ min, max ]} max={length}
+            <Slider key={'slider1'} style={{ width: '80%', margin: 'auto', padding: '25px 0px' }} range={{ draggableTrack: true, step: 10 }} step={10} value={[ min, max ]} max={length}
                 onChange={([ minSlider, maxSlider ]) => onSequenceRangeFilterChange({ min: minSlider, max: maxSlider })} 
             />,
             renderInputNumber(min, StringManager.get('minLabel'), (min) => onSequenceRangeFilterChange({ min, max })),
