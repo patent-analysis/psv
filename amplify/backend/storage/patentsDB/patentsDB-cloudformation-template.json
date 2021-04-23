@@ -107,6 +107,10 @@
                     {
                         "AttributeName": "patentNumber",
                         "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": "proteinId",
+                        "KeyType": "HASH"
                     }
                 ],
                 "GlobalSecondaryIndexes": [
