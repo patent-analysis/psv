@@ -1,36 +1,4 @@
 {
-  "dev": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-psv-dev-10725-authRole",
-      "UnauthRoleArn": "arn:aws:iam::147427553671:role/amplify-psv-dev-10725-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::147427553671:role/amplify-psv-dev-10725-authRole",
-      "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-psv-dev-10725-deployment",
-      "UnauthRoleName": "amplify-psv-dev-10725-unauthRole",
-      "StackName": "amplify-psv-dev-10725",
-      "StackId": "arn:aws:cloudformation:us-east-1:147427553671:stack/amplify-psv-dev-10725/5e249d80-8312-11eb-8060-0e1e5ddf8d93",
-      "AmplifyAppId": "d3nuz0k9umkypw"
-    },
-    "categories": {
-      "auth": {
-        "psv670c5d1b": {}
-      },
-      "function": {
-        "patentsLambda": {
-          "deploymentBucketName": "amplify-psv-dev-10725-deployment",
-          "s3Key": "amplify-builds/patentsLambda-67774c347668716a3249-build.zip"
-        },
-        "bioMoleculesLambda": {
-          "deploymentBucketName": "amplify-psv-dev-10725-deployment",
-          "s3Key": "amplify-builds/bioMoleculesLambda-61506e59756a4b734171-build.zip"
-        },
-        "patentUploadsLambda": {
-          "deploymentBucketName": "amplify-psv-dev-10725-deployment",
-          "s3Key": "amplify-builds/patentUploadsLambda-75314a796d615073706e-build.zip"
-        }
-      }
-    }
-  },
   "prod": {
     "awscloudformation": {
       "AuthRoleName": "amplify-psv-prod-44827-authRole",
@@ -65,6 +33,38 @@
         "psv6230128c": {
           "bucketName": "psv-document-storage",
           "region": "us-east-1"
+        }
+      }
+    }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-psv-dev-05408-authRole",
+      "UnauthRoleArn": "arn:aws:iam::147427553671:role/amplify-psv-dev-05408-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::147427553671:role/amplify-psv-dev-05408-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-psv-dev-05408-deployment",
+      "UnauthRoleName": "amplify-psv-dev-05408-unauthRole",
+      "StackName": "amplify-psv-dev-05408",
+      "StackId": "arn:aws:cloudformation:us-east-1:147427553671:stack/amplify-psv-dev-05408/f1f7eb40-a3ef-11eb-a1f1-12010cdf73d7",
+      "AmplifyAppId": "d3nuz0k9umkypw"
+    },
+    "categories": {
+      "auth": {
+        "psv670c5d1b": {}
+      },
+      "function": {
+        "bioMoleculesLambda": {
+          "deploymentBucketName": "amplify-psv-dev-05408-deployment",
+          "s3Key": "amplify-builds/bioMoleculesLambda-534f77696d5a67717070-build.zip"
+        },
+        "patentUploadsLambda": {
+          "deploymentBucketName": "amplify-psv-dev-05408-deployment",
+          "s3Key": "amplify-builds/patentUploadsLambda-6a44435a593361377063-build.zip"
+        },
+        "patentsLambda": {
+          "deploymentBucketName": "amplify-psv-dev-05408-deployment",
+          "s3Key": "amplify-builds/patentsLambda-715677746373642f4b32-build.zip"
         }
       }
     }
