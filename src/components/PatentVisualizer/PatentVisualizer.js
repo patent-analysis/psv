@@ -3,14 +3,15 @@ import 'antd/dist/antd.css';
 import './PatentVisualizer.css';
 import { CloseOutlined } from '@ant-design/icons';
 import { Heatmap, G2 } from '@ant-design/charts';
-import { Layout, Button, Spin } from 'antd';
+import { Layout, Button, Spin, Typography } from 'antd';
 import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
 import { getPatentData, generateVisualizationDataset, sortDataset } from '../../utils/patentDataUtils';
 import { useLocation } from 'react-router-dom';
-
+import StringManager from '../../utils/StringManager';
+const { Title } = Typography;
 const { Sider } = Layout;
 
 const KEYS = {
@@ -254,6 +255,7 @@ const PatentVisualizer = props => {
 
     return (
         [
+            <Title level={3}> {`${StringManager.get('resultsFor')} ${location.state.proteinName}:`} </Title>,
             <Layout>
                 <Spin style={{
                     position: 'absolute',

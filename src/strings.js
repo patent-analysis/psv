@@ -19,7 +19,9 @@ const strings = {
     tooltipSeqExample: 'One character sequence. Example: IRNISNPN..',
     addSeq: 'Add Sequence',
     seqName: 'Sequence Name',
-    add: 'Add'
+    add: 'Add',
+    download: 'Download',
+    resultsFor: 'Results for'
 }
 
 export default Object.freeze(strings);

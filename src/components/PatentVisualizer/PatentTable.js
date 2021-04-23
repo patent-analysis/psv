@@ -48,7 +48,7 @@ const getColumns = (toggleShow, displayedPatents) => [
         key: 'action',
         render: (text, record) => (
             <Space size="middle">
-                <a href={getUSPTODownloadUrl(record.patentNumber)} rel="noreferrer" target="_blank">Download</a>
+                <a href={getUSPTODownloadUrl(record.patentNumber)} rel="noreferrer" target="_blank">{StringManager.get('download')}</a>
             </Space>
         ),
     },
