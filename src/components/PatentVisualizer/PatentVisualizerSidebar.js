@@ -26,7 +26,7 @@ const renderInputNumber = (value, label, onChange) => {
     return (
         <div key={'inputNumber' + label} style={{ 
             display: 'flex',
-            margin: 'auto',
+            margin: '25px auto',
             justifyContent: 'center',
             alignItems: 'baseline'
         }}>
@@ -46,7 +46,7 @@ const renderSequenceFilter = (min, max, length, onSequenceRangeFilterChange) => 
     };
     return (
         [
-            <Slider marks={marks} key={'slider1'} style={{ width: '80%', margin: 'auto', padding: '25px 0px' }} range={{ draggableTrack: true, step: 10 }} step={10} value={[ min, max ]} max={length}
+            <Slider marks={marks} key={'slider1'} style={{ width: '80%', margin: '25px auto' }} range={{ draggableTrack: true, step: 10 }} step={10} value={[ min, max ]} max={length}
                 onChange={([ minSlider, maxSlider ]) => onSequenceRangeFilterChange({ min: minSlider, max: maxSlider })} 
             />,
             renderInputNumber(min, StringManager.get('minLabel'), (min) => onSequenceRangeFilterChange({ min, max })),
