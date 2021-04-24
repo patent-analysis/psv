@@ -3,14 +3,12 @@ import { Input, Button, Radio } from 'antd';
 import Modal from 'react-modal';
 
 function EditModalDialog(props) {
-    const [assignee, setAssignee] = useState(props.patentDetails.assignee);
+    const [assignee, setAssignee] = useState(props.patentDetails.patentAssignees);
     const [patentName, setPatentName] = useState(props.patentDetails.patentName);
     const [patentFiled, setPatentFiled] = useState(props.patentDetails.patentFiled);
     const [patentDate, setPatentDate] = useState(props.patentDetails.patentDate);
-    const [aminoAcid, setAminoAcid] = useState(props.patentDetails.aminoAcid);
-    const [claimed, setClaimed] = useState(props.patentDetails.claimed ? 'True' : 'False');
+    const [claimed, setClaimed] = useState(props.patentDetails.claimedResidues);
     const [patentLegalOpinion, setPatentLegalOpinion] = useState(props.patentDetails.patentLegalOpinion);
-
 
     const customStyles = {
         content: {
@@ -25,12 +23,11 @@ function EditModalDialog(props) {
     };
 
     const submitPatentDetails = () => {
-        props.patentDetails.assignee = assignee;
+        props.patentDetails.patentAssignees = assignee;
         props.patentDetails.patentName = patentName;
         props.patentDetails.patentFiled = patentFiled;
-        props.patentDetails.aminoAcid = aminoAcid;
-        props.patentDetails.claimed = claimed === 'True' ? true : false;
         props.patentDetails.patentDate = patentDate;
+        props.patentDetails.claimedResidues = claimed;
         props.patentDetails.patentLegalOpinion = patentLegalOpinion;
 
         props.onPatentEditSubmit();
@@ -46,7 +43,7 @@ function EditModalDialog(props) {
         >
             <div>
                 <h3 id="contained-modal-title-vcenter">
-                    Edit Patent Data
+                    Edit Patent Data: {props.patentDetails.patentNumber}
                 </h3>
             </div>
             <div>
@@ -70,22 +67,11 @@ function EditModalDialog(props) {
                     onChange={(e) => {
                         setPatentDate(e.target.value)
                     }} />
-                Amino Acid:
-                <Input value={aminoAcid}
+                Claimed:
+                <Input value={claimed}
                     onChange={(e) => {
-                        setAminoAcid(e.target.value)
+                        setClaimed(e.target.value)
                     }} />
-                Epitope: <br />
-                {/* <Input value={claimed}
-                    onChange={(e) => {
-                        setClaimed(e.target.value)}} /> */}
-                <Radio.Group defaultValue={claimed}
-                    onChange={(e) => {
-                        setClaimed(e.target.value);
-                    }}>
-                    <Radio.Button value="True">True</Radio.Button>
-                    <Radio.Button value="False">False</Radio.Button>
-                </Radio.Group> <br />
                 Legal Opinion:
                 <Input value={patentLegalOpinion}
                     onChange={(e) => {
