@@ -8,9 +8,11 @@ import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
-import { getPatentData, generateVisualizationDataset, sortDataset } from '../../utils/patentDataUtils';
+import { getPatentData, generateVisualizationDataset, savePatentData, sortDataset } from '../../utils/patentDataUtils';
 import { useLocation } from 'react-router-dom';
+import EditModalDialog from '../EditDataModal/EditDataModal'
 import StringManager from '../../utils/StringManager';
+
 const { Title } = Typography;
 const { Sider } = Layout;
 
@@ -20,14 +22,16 @@ const KEYS = {
     patentNumber: 'patentNumber',
     claimed: 'Claimed',
     aminoAcid: 'Amino Acid',
-    baseline: 'Sequence'
+    baseline: 'Sequence',
+    patentName: 'Patent Name',
+    patentFiled: 'Patent Filed',
 }
 Object.freeze(KEYS);
 
 const getMaximumSeq = (patentArray) => {
     return patentArray.reduce((max, current) => {
         const seqPosition = parseInt(current[KEYS.sequencePosition]);
-        if(seqPosition > max) {
+        if (seqPosition > max) {
             return seqPosition;
         } else {
             return max;
@@ -47,6 +51,7 @@ const sequenceStringToArray = (seqString, name) => {
             }
         });
 }
+
 
 const G2DrawResidues = (details) => {
     G2.registerShape('polygon', 'boundary-polygon', {
@@ -81,6 +86,7 @@ const G2DrawResidues = (details) => {
         },
     });
 }
+
 const PatentVisualizer = props => {
     const location = useLocation();
     const query = new URLSearchParams(location.search);
@@ -94,6 +100,8 @@ const PatentVisualizer = props => {
     const [manualSequenceList, setManualSequenceList] = useState([]);
 
     const _dataRef = useRef([]);
+    const [modalShow, setModalShow] = React.useState(false);
+    const [editPatentDetails, setEditPatentDetails] = useState({});
     G2DrawResidues(details);
     useEffect(() => {
         (async function () {
@@ -142,6 +150,8 @@ const PatentVisualizer = props => {
     }, [assignees, sequenceRange, showBaseline, displayedPatents, manualSequenceList]);
 
     const setPatentData = (patentData) => {
+        console.debug('Patent Data: ', patentData);
+        //Generate individual data points for the heat map based on the patent data
         // Create object using patent numbers as keys: { US00801234567: true, US008065732AA: true }
         const patentNumbers = patentData.reduce((prev, current) => {
             return { ...prev, [current.patentNumber]: true }
@@ -211,17 +221,17 @@ const PatentVisualizer = props => {
             }
         },
         showContent: true,
-        meta: { [KEYS.patentNumber] : { type: 'cat' } },
+        meta: { [KEYS.patentNumber]: { type: 'cat' } },
     };
     
     const onEvent = (__chart, event) => {
         // If event.data is not available user clicked on empty tile of heatmap
-        if(event.type === 'click' && event.data) {
+        if (event.type === 'click' && event.data) {
             setDetails({
                 show: true,
                 patentId: event.data.data[KEYS.patentNumber],
                 assignee: event.data.data[KEYS.assignee],
-                seqPosition: event.data.data[KEYS.sequencePosition]
+                seqPosition: event.data.data[KEYS.sequencePosition],
             });
         }
     }
@@ -251,6 +261,21 @@ const PatentVisualizer = props => {
         setBaseline(e.target.checked);
     }
 
+    const patentEditSubmit = (modifiedPatentDetails) => {
+        let pat = tableDetails.find(p => p.patentNumber === editPatentDetails.patentNumber);
+        for (const property in modifiedPatentDetails) {
+            pat[property] = modifiedPatentDetails[property];
+        }
+        savePatentData(pat);
+        setModalShow(false);
+    }
+
+    const onEditPatent = (patentNumber) => {
+        let pat = tableDetails.find(p => p.patentNumber === patentNumber);
+        setEditPatentDetails(pat);
+        setModalShow(true);
+    }
+        
     const addManualSequence = (sequence = '', name) => {
         // Sequence is passed as a String, we need to format the data to send to the chart
         const newSequence = sequenceStringToArray(sequence, name);
@@ -277,6 +302,12 @@ const PatentVisualizer = props => {
         [
             <Title level={3}> {`${StringManager.get('resultsFor')} ${proteinName || ''}:`} </Title>,
             <Layout>
+                {modalShow && <EditModalDialog
+                    isOpen={modalShow}
+                    onHide={() => setModalShow(false)}
+                    patentDetails={editPatentDetails}
+                    onPatentEditSubmit={patentEditSubmit}
+                />}
                 <Spin style={{
                     position: 'absolute',
                     top: '50%',
@@ -295,24 +326,25 @@ const PatentVisualizer = props => {
                 <Layout style={{ padding: '24px', overflow: 'auto' }}>
                     <Heatmap onEvent={onEvent} {...config} />
                 </Layout>
-                {details.show && 
-                <Sider className="site-layout-background" theme="light" width={200} style={{ padding: '20px' }}>
-                    <CloseOutlined className="visualizer__details-sider-icon" 
-                        onClick={() => setDetails({ ...details, show: false })}
-                    />
-                    <div>Patent Name: {details.patentId}</div>
-                    <div>Sequence Index - Name: {details.seqPosition}</div>
-                    <div>Assignee: {details.assignee}</div>
-                    <div>Other relevant data: </div>
-                    <div>Link to PDF</div>
-                    <div>Text extracted</div>
-                    <div className="visualizer__edit-button-container">
-                        <Button type="primary">Edit Data</Button>
-                    </div>
-                </Sider>
+                {details.show &&
+                    <Sider className="site-layout-background" theme="light" width={200} style={{ padding: '20px' }}>
+                        <CloseOutlined className="visualizer__details-sider-icon"
+                            onClick={() => setDetails({ ...details, show: false })}
+                        />
+                        <div>Patent Name: {details.patentId}</div>
+                        <div>Sequence Index - Name: {details.seqPosition}</div>
+                        <div>Assignee: {details.assignee}</div>
+                        <div>Other relevant data: </div>
+                        <div>Link to PDF</div>
+                        <div>Text extracted</div>
+                        <div className="visualizer__edit-button-container">
+                            <Button type="primary">Edit Data</Button>
+
+                        </div>
+                    </Sider>
                 }
             </Layout>,
-            <PatentTable patentData={tableDetails} onPatentNumberFilterChange={onPatentNumberFilterChange} displayedPatents={displayedPatents} />
+            <PatentTable patentData={tableDetails} onEditPatent={onEditPatent} onPatentNumberFilterChange={onPatentNumberFilterChange} displayedPatents={displayedPatents} />
         ]
     )
 };

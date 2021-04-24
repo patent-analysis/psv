@@ -14,6 +14,9 @@ const strings = {
     assignee: 'Assignee',
     patentName: 'Patent Name',
     patentNumber: 'Patent Number',
+    patentFiled: 'Patent Filed',
+    patentDate: 'Patent Date',
+    legalOpinion: 'Legal Opinion',
     issueDate: 'Issue Data',
     tooltipSeqName: 'Text to display on the Y-axis',
     tooltipSeqExample: 'One character sequence. Example: IRNISNPN..',
@@ -22,6 +25,7 @@ const strings = {
     add: 'Add',
     download: 'Download',
     resultsFor: 'Results for',
+    editModalTitle: 'Edit Patent Data:',
     proteinNotFoundTitle: 'Error fetching protein data: ',
     proteinNotFoundDesc: 'Please return to the search page and try again.',
     proteinNotFound: 'Protein not found'
