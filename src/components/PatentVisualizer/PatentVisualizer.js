@@ -3,7 +3,7 @@ import 'antd/dist/antd.css';
 import './PatentVisualizer.css';
 import { CloseOutlined } from '@ant-design/icons';
 import { Heatmap, G2 } from '@ant-design/charts';
-import { Layout, Button, Spin, Typography } from 'antd';
+import { Modal, Layout, Button, Spin, Typography } from 'antd';
 import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
@@ -39,14 +39,17 @@ const getMaximumSeq = (patentArray) => {
     }, 0);
 }
 const sequenceStringToArray = (seqString, name) => {
-    return seqString.split('').map((char, index) => {
-        return {
-            'patentNumber': `${KEYS.baseline}_${name}`,
-            'patentAssignees': KEYS.baseline,
-            'sequencePosition': (index + 1).toString(),
-            'Amino Acid': char
-        }
-    });
+    return seqString.split('')
+        // If sequence has spaces ignore them
+        .filter((char) => char !== ' ')
+        .map((char, index) => {
+            return {
+                'patentNumber': `${KEYS.baseline}_${name}`,
+                'patentAssignees': KEYS.baseline,
+                'sequencePosition': (index + 1).toString(),
+                'Amino Acid': char
+            }
+        });
 }
 
 
@@ -86,6 +89,8 @@ const G2DrawResidues = (details) => {
 
 const PatentVisualizer = props => {
     const location = useLocation();
+    const query = new URLSearchParams(location.search);
+    const proteinName = query.get('proteinName');
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
@@ -99,13 +104,23 @@ const PatentVisualizer = props => {
     const [editPatentDetails, setEditPatentDetails] = useState({});
     G2DrawResidues(details);
     useEffect(() => {
-        const proteinName = location.state.proteinName;
         (async function () {
-            const patentData = await getPatentData(proteinName);
-            isLoading(false);
-            setPatentData(patentData);
+            try {
+                const patentData = await getPatentData(proteinName);
+                if(!patentData || patentData.length === 0) {
+                    throw Error('no data');
+                }
+                isLoading(false);
+                setPatentData(patentData);
+            } catch(error) {
+                const titleExtension = proteinName === null ? StringManager.get('proteinNotFound') : proteinName; 
+                Modal.error({
+                    title: StringManager.get('proteinNotFoundTitle') + titleExtension,
+                    content: StringManager.get('proteinNotFoundDesc')
+                });
+            }
         })();
-    }, [location.state.proteinName]);
+    }, [proteinName]);
 
     // Filtering Effect
     const [assignees, setAssignees] = useState({});
@@ -267,8 +282,13 @@ const PatentVisualizer = props => {
         // Sort data to make sure manual sequences are shown at the bottom of the chart
         const newDataset = sortDataset(data.concat(newSequence));
         setData(newDataset);
-        setManualSequenceList([...manualSequenceList, { show: true, name }]);
         _dataRef.current = newDataset;
+
+        const isSeqDefined = manualSequenceList.some((elem) => elem.name === name);
+        if (!isSeqDefined) {
+            setManualSequenceList([...manualSequenceList, { show: true, name }]);
+        }
+
     }
 
     const toggleManualSeq = (seqName, toggle) => {
@@ -280,7 +300,7 @@ const PatentVisualizer = props => {
 
     return (
         [
-            <Title level={3}> {`${StringManager.get('resultsFor')} ${location.state.proteinName}:`} </Title>,
+            <Title level={3}> {`${StringManager.get('resultsFor')} ${proteinName || ''}:`} </Title>,
             <Layout>
                 {modalShow && <EditModalDialog
                     isOpen={modalShow}

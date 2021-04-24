@@ -25,7 +25,10 @@ const strings = {
     add: 'Add',
     download: 'Download',
     resultsFor: 'Results for',
-    editModalTitle: 'Edit Patent Data:'
+    editModalTitle: 'Edit Patent Data:',
+    proteinNotFoundTitle: 'Error fetching protein data: ',
+    proteinNotFoundDesc: 'Please return to the search page and try again.',
+    proteinNotFound: 'Protein not found'
 }
 
 export default Object.freeze(strings);

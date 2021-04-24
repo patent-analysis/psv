@@ -14,7 +14,11 @@ const options = [
 const Search = () => {
     let history = useHistory();
     const onFinish = (values) => {
-        history.push({pathname : '/results', state: {proteinName: values.protein}});
+        history.push({
+            pathname : '/results',
+            search: `?proteinName=${values.protein}`,
+            state: { proteinName: values.protein }
+        });
         console.log('Searching for patent details for:', values);
     };
 

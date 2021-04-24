@@ -102,6 +102,7 @@ const renderAddSequence = (addManualSequence, manualSeq, setManualSeq, manualSeq
                         enterButton={StringManager.get('add')}
                         size="small"
                         style={{ margin: 'auto' }}
+                        disabled={manualSeq.seqName ? false : true}
                         onChange={(e) => setManualSeq({ seqName: manualSeq.seqName, seqString: e.target.value })}
                         onSearch={() => addManualSequence(manualSeq.seqString, manualSeq.seqName) }
                     />
