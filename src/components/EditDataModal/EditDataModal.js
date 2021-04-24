@@ -1,27 +1,15 @@
 import React, { useState } from 'react';
-import { Input, Button } from 'antd';
-import Modal from 'react-modal';
+import { Input, Modal } from 'antd';
 import StringManager from '../../utils/StringManager';
 
 function EditModalDialog(props) {
+    const [isModalVisible] = useState(props.isOpen);
     const [assignee, setAssignee] = useState(props.patentDetails.patentAssignees);
     const [patentName, setPatentName] = useState(props.patentDetails.patentName);
     const [patentFiled, setPatentFiled] = useState(props.patentDetails.patentFiled);
     const [patentDate, setPatentDate] = useState(props.patentDetails.patentDate);
     const [claimed, setClaimed] = useState(props.patentDetails.claimedResidues);
     const [patentLegalOpinion, setPatentLegalOpinion] = useState(props.patentDetails.patentLegalOpinion);
-
-    const customStyles = {
-        content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            width: '50%',
-        }
-    };
 
     const submitPatentDetails = () => {
         const modifiedPatentDetails = {
@@ -38,17 +26,11 @@ function EditModalDialog(props) {
 
     return (
         <Modal
-            {...props}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-            style={customStyles}
+            title={StringManager.get('editModalTitle') + ' ' + props.patentDetails.patentNumber}
+            visible={isModalVisible}
+            onOk={submitPatentDetails}
+            onCancel={props.onHide}
         >
-            <div>
-                <h3 id="contained-modal-title-vcenter">
-                    {StringManager.get('editModalTitle') + ' ' + props.patentDetails.patentNumber}
-                </h3>
-            </div>
             <div>
                 {StringManager.get('assignee') + ': '}
                 <Input value={assignee}
@@ -80,10 +62,6 @@ function EditModalDialog(props) {
                     onChange={(e) => {
                         setPatentLegalOpinion(e.target.value)
                     }} />
-            </div>
-            <div>
-                <Button onClick={props.onHide}>Close</Button>
-                <Button type="primary" onClick={submitPatentDetails}>Submit</Button>
             </div>
         </Modal>
     );
