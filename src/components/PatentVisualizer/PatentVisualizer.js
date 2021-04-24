@@ -257,8 +257,13 @@ const PatentVisualizer = props => {
         // Sort data to make sure manual sequences are shown at the bottom of the chart
         const newDataset = sortDataset(data.concat(newSequence));
         setData(newDataset);
-        setManualSequenceList([...manualSequenceList, { show: true, name }]);
         _dataRef.current = newDataset;
+
+        const isSeqDefined = manualSequenceList.some((elem) => elem.name === name);
+        if (!isSeqDefined) {
+            setManualSequenceList([...manualSequenceList, { show: true, name }]);
+        }
+
     }
 
     const toggleManualSeq = (seqName, toggle) => {
