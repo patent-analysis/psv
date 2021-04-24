@@ -246,9 +246,11 @@ const PatentVisualizer = props => {
         setBaseline(e.target.checked);
     }
 
-    const patentEditSubmit = () => {
+    const patentEditSubmit = (modifiedPatentDetails) => {
         let pat = tableDetails.find(p => p.patentNumber === editPatentDetails.patentNumber);
-
+        for (const property in modifiedPatentDetails) {
+            pat[property] = modifiedPatentDetails[property];
+        }
         savePatentData(pat);
         setModalShow(false);
     }
@@ -284,7 +286,7 @@ const PatentVisualizer = props => {
                     isOpen={modalShow}
                     onHide={() => setModalShow(false)}
                     patentDetails={editPatentDetails}
-                    onPatentEditSubmit={() => patentEditSubmit()}
+                    onPatentEditSubmit={patentEditSubmit}
                 />}
                 <Spin style={{
                     position: 'absolute',

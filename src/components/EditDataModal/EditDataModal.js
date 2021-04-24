@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Input, Button } from 'antd';
 import Modal from 'react-modal';
+import StringManager from '../../utils/StringManager';
 
 function EditModalDialog(props) {
     const [assignee, setAssignee] = useState(props.patentDetails.patentAssignees);
@@ -23,14 +24,16 @@ function EditModalDialog(props) {
     };
 
     const submitPatentDetails = () => {
-        props.patentDetails.patentAssignees = assignee;
-        props.patentDetails.patentName = patentName;
-        props.patentDetails.patentFiled = patentFiled;
-        props.patentDetails.patentDate = patentDate;
-        props.patentDetails.claimedResidues = claimed;
-        props.patentDetails.patentLegalOpinion = patentLegalOpinion;
+        const modifiedPatentDetails = {
+            'patentAssignees' : assignee,
+            'patentName' : patentName,
+            'patentFiled' : patentFiled,
+            'patentDate' : patentDate,
+            'claimedResidues' : claimed,
+            'patentLegalOpinion' : patentLegalOpinion
+        }
 
-        props.onPatentEditSubmit();
+        props.onPatentEditSubmit(modifiedPatentDetails);
     }
 
     return (
@@ -43,36 +46,36 @@ function EditModalDialog(props) {
         >
             <div>
                 <h3 id="contained-modal-title-vcenter">
-                    Edit Patent Data: {props.patentDetails.patentNumber}
+                    {StringManager.get('editModalTitle') + ' ' + props.patentDetails.patentNumber}
                 </h3>
             </div>
             <div>
-                Assignee:
+                {StringManager.get('assignee') + ': '}
                 <Input value={assignee}
                     onChange={(e) => {
                         setAssignee(e.target.value)
                     }} />
-                Patent Name:
+                {StringManager.get('patentName') + ': '}
                 <Input value={patentName}
                     onChange={(e) => {
                         setPatentName(e.target.value)
                     }} />
-                Patent Filed:
+                {StringManager.get('patentFiled') + ': '}
                 <Input value={patentFiled}
                     onChange={(e) => {
                         setPatentFiled(e.target.value)
                     }} />
-                Patent Date:
+                {StringManager.get('patentDate') + ': '}
                 <Input value={patentDate}
                     onChange={(e) => {
                         setPatentDate(e.target.value)
                     }} />
-                Claimed:
+                {StringManager.get('claimedResidues') + ': '}
                 <Input value={claimed}
                     onChange={(e) => {
                         setClaimed(e.target.value)
                     }} />
-                Legal Opinion:
+                {StringManager.get('legalOpinion') + ': '}
                 <Input value={patentLegalOpinion}
                     onChange={(e) => {
                         setPatentLegalOpinion(e.target.value)

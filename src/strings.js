@@ -14,6 +14,9 @@ const strings = {
     assignee: 'Assignee',
     patentName: 'Patent Name',
     patentNumber: 'Patent Number',
+    patentFiled: 'Patent Filed',
+    patentDate: 'Patent Date',
+    legalOpinion: 'Legal Opinion',
     issueDate: 'Issue Data',
     tooltipSeqName: 'Text to display on the Y-axis',
     tooltipSeqExample: 'One character sequence. Example: IRNISNPN..',
@@ -21,7 +24,8 @@ const strings = {
     seqName: 'Sequence Name',
     add: 'Add',
     download: 'Download',
-    resultsFor: 'Results for'
+    resultsFor: 'Results for',
+    editModalTitle: 'Edit Patent Data:'
 }
 
 export default Object.freeze(strings);
