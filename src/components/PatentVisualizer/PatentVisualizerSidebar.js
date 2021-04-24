@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Layout, Menu, Checkbox, Slider, InputNumber } from 'antd';
+import { Layout, Menu, Checkbox, Slider, InputNumber, Input, Tooltip } from 'antd';
 import 'antd/dist/antd.css';
+import './PatentVisualizer.css';
 import { UserOutlined } from '@ant-design/icons';
 import StringManager from '../../utils/StringManager';
 import ColorSquare from './ColorSquare';
 const { SubMenu } = Menu;
 const { Sider } = Layout;
+const { Search } = Input;
 
 const renderCheckboxList = (filterObject, onChange, colorKeys) => {
     return Object.keys(filterObject).map((key, index) => {
@@ -24,7 +26,7 @@ const renderInputNumber = (value, label, onChange) => {
     return (
         <div key={'inputNumber' + label} style={{ 
             display: 'flex',
-            margin: 'auto',
+            margin: '25px auto',
             justifyContent: 'center',
             alignItems: 'baseline'
         }}>
@@ -38,9 +40,13 @@ const renderInputNumber = (value, label, onChange) => {
     );
 }
 const renderSequenceFilter = (min, max, length, onSequenceRangeFilterChange) => {
+    const marks = {
+        0: '0',
+        [length]: length,
+    };
     return (
         [
-            <Slider key={'slider1'} style={{ width: '80%', margin: 'auto', padding: '25px 0px' }} range value={[ min, max ]} max={length}
+            <Slider marks={marks} key={'slider1'} style={{ width: '80%', margin: '25px auto' }} range={{ draggableTrack: true, step: 10 }} step={10} value={[ min, max ]} max={length}
                 onChange={([ minSlider, maxSlider ]) => onSequenceRangeFilterChange({ min: minSlider, max: maxSlider })} 
             />,
             renderInputNumber(min, StringManager.get('minLabel'), (min) => onSequenceRangeFilterChange({ min, max })),
@@ -49,38 +55,89 @@ const renderSequenceFilter = (min, max, length, onSequenceRangeFilterChange) => 
     );
 }
 
+const renderAddSequence = (addManualSequence, manualSeq, setManualSeq, manualSequenceList, toggleManualSeq) => {
+    const checkboxes = manualSequenceList.map((seq, index) => {
+        return (
+            <Menu.Item
+                style={{ display: 'flex', margin: 'auto' }}
+                key={`addSeq_checkbox_${index}`}
+            >
+                <Checkbox onChange={(e) => toggleManualSeq(seq.name, e.target.checked)} checked={seq.show}>
+                    {seq.name}
+                </Checkbox>
+            </Menu.Item>
+        );
+    });
+
+    return (
+        [
+            <Menu.Item
+                style={{ display: 'flex', margin: 'auto' }}
+                key={'addSeq_1'}
+            >
+                <Tooltip
+                    trigger={['focus']}
+                    title={StringManager.get('tooltipSeqName')}
+                    placement="topLeft"
+                    overlayClassName="numeric-input"
+                >
+                    <Input size="small" placeholder={StringManager.get('seqName')} style={{ margin: 'auto' }} 
+                        onChange={(e) => setManualSeq({ seqName: e.target.value, seqString: manualSeq.seqString })}
+                    />
+                </Tooltip>
+            </Menu.Item>,
+            <Menu.Item
+                style={{ display: 'flex', margin: 'auto' }}
+                key={'addSeq_2'}
+            >
+                <Tooltip
+                    trigger={['focus']}
+                    title={StringManager.get('tooltipSeqExample')}
+                    placement="topLeft"
+                    overlayClassName="numeric-input"
+                >
+                    <Search
+                        placeholder={StringManager.get('addSeq')}
+                        allowClear
+                        enterButton={StringManager.get('add')}
+                        size="small"
+                        style={{ margin: 'auto' }}
+                        onChange={(e) => setManualSeq({ seqName: manualSeq.seqName, seqString: e.target.value })}
+                        onSearch={() => addManualSequence(manualSeq.seqString, manualSeq.seqName) }
+                    />
+                </Tooltip>
+            </Menu.Item>,
+            ...checkboxes
+        ]
+    );
+}
+
 const PatentVisualizerSidebar = (props) => {
     const { onSequenceRangeFilterChange, sequenceRange } = props;
     const { min, max, length } = sequenceRange;
     const [siderWidth, setSiderWidth] = useState(300);
+    const [manualSeq, setManualSeq] = useState({ seqName: '', seqString: '' });
     let isDragging = false;
 
     const MIN_SIDER_WIDTH = 100;
     return (
         <Sider width={siderWidth} className="site-layout-background">
-            <div style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                height: '100%',
-                width: 20,
-                cursor: 'ew-resize'
-            }}
-            onMouseDown={() => {
-                isDragging = true;
-                document.onmousemove = (e) => {
-                    if(isDragging) {
+            <div className="visualizer__sidebar__expander"
+                onMouseDown={() => {
+                    isDragging = true;
+                    document.onmousemove = (e) => {
+                        if(isDragging) {
                         // pageX is returning a higher number than the edge of our sider so we offset by
                         // an arbitrary 30px to make it smoother
-                        setSiderWidth(e.pageX > MIN_SIDER_WIDTH ? e.pageX - 30: MIN_SIDER_WIDTH);
+                            setSiderWidth(e.pageX > MIN_SIDER_WIDTH ? e.pageX - 30: MIN_SIDER_WIDTH);
+                        }
+                        return false;
                     }
-                    return false;
-                }
-                document.onmouseup = () => {
-                    isDragging = false;
-                    document.onmousemove = undefined;
-                }
-            }}
+                    document.onmouseup = () => {
+                        isDragging = false;
+                        document.onmousemove = undefined;
+                    }
+                }}
             />
             <Menu
                 mode="inline"
@@ -93,6 +150,9 @@ const PatentVisualizerSidebar = (props) => {
                 </SubMenu>
                 <SubMenu key="sub2" icon={<UserOutlined />} title={StringManager.get('filterBySequencePosition')}>
                     {renderSequenceFilter(min, max, length, onSequenceRangeFilterChange)}
+                </SubMenu>
+                <SubMenu key="sub3" icon={<UserOutlined />} title={'Add Sequence'}>
+                    {renderAddSequence(props.addManualSequence, manualSeq, setManualSeq, props.manualSequenceList, props.toggleManualSeq)}
                 </SubMenu>
                 <Menu.Item>
                     <Checkbox onChange={props.toggleBaseline} checked={props.showBaseline}>

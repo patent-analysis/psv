@@ -3,6 +3,9 @@ import 'antd/dist/antd.css';
 import { Table, Space, Checkbox, Button } from 'antd';
 import StringManager from '../../utils/StringManager';
 
+const getLensUrl = (patent) => `https://www.lens.org/lens/search/patent/list?q=${patent}&preview=true`
+const getUSPTODownloadUrl = (patent) => `https://pdfpiw.uspto.gov/.piw?Docid=${patent}&idkey=NONE&homeurl=http%3A%252F%252Fpatft.uspto.gov%252Fnetahtml%252FPTO%252Fpatimg.htm`
+
 const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
     {
         title: '',
@@ -17,7 +20,7 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
         title: StringManager.get('patentNumber'),
         dataIndex: 'patentNumber',
         key: 'patentNumber',
-        render: text => <a href="/">{text}</a>,
+        render: text => <a href={getLensUrl(text)} rel="noreferrer" target="_blank">{text}</a>,
     },
     {
         title: StringManager.get('patentName'),
@@ -44,7 +47,7 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
         key: 'action',
         render: (text, record) => (
             <Space size="middle">
-                <a href="/">Download {record.name}</a>
+                <a href={getUSPTODownloadUrl(record.patentNumber)} rel="noreferrer" target="_blank">{StringManager.get('download')}</a>
             </Space>
         ),
     },

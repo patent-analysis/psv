@@ -11,6 +11,10 @@
     "psvpatents3": {
       "service": "S3",
       "providerPlugin": "awscloudformation"
+    },
+    "psvdocs": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
     }
   },
   "function": {
