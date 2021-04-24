@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Input, Button, Radio } from 'antd';
+import { Input, Button } from 'antd';
 import Modal from 'react-modal';
 
 function EditModalDialog(props) {
