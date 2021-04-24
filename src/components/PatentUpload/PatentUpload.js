@@ -1,14 +1,18 @@
 import { Component } from 'react';
-import { Storage } from 'aws-amplify';
 import awsExports from '../.././aws-exports';
 import './PatentUpload.css';
+import { S3 } from '@aws-sdk/client-s3';         
+
+// TODO: move these to a config file or secrets manager etc.
+const creds = {
+    accessKeyId: 'AKIASEU256GDX6MZ24EZ',
+    secretAccessKey: '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'
+};
 
 class PatentUpload extends Component {
   // Initialize state
   state = {
-      imageName: '',
-      imageFile: '',
-      response: '',
+      response: ''
   };
 
   uploadPatent = () => {
@@ -29,22 +33,31 @@ class PatentUpload extends Component {
     to the S3 bucket in a folder named public and then the protein name the user input
     ex. s3bucket/public/PCSK9/1234.pdf */
           for (var i =0; i < input.files.length; i++) {
-              Storage.put(`${document.getElementById('protein').value}/${input.files.item(i).name}`,
-                  this.upload.files,
-                  { contentType: input.files.item(i).type})
-                  .then(result => {
-                      this.upload = {
-                          bucket: awsExports.aws_user_files_s3_bucket,
-                          region: awsExports.aws_user_files_s3_bucket_region,
-                          key: 'public/' + this.upload.files.name
-                      }
+              var bucketName = 'psv-document-storage';  //TODO: move this to a config file
+              var objectKey = `${document.getElementById('protein').value}/${input.files.item(i).name}`;
+              var srcPath = `${input.files.item(i)}`;
+
+              var s3 = new S3({
+                  region: awsExports.aws_project_region, 
+                  credentials: creds 
+              });
+              var params = {
+                  Bucket : bucketName,
+                  Key : objectKey,
+                  Body : srcPath
+              }
+              s3.putObject(params, function(err, data) {
+                  if (err) {
+                      console.log(err, err.stack); 	//an error 
+                      this.setState({ response: `Error uploading file: ${err}` });
+                  }
+                  else {
+                      console.log(data);
                       this.setState({ response: 'Success uploading file!' });
                       alert('Success Uploading File! ');
                       window.location.reload(true);
-                  })
-                  .catch(err => {
-                      this.setState({ response: `Error uploading file: ${err}` });
-                  });
+                  }
+              });
           }
       }
   };
