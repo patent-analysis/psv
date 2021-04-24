@@ -10,3 +10,18 @@
         top: 5px;
         right: 5px;
 }
+
+.visualizer__sidebar__expander {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 20px;
+    cursor: ew-resize;
+    z-index: 1;
+}
+
+.visualizer__sidebar__expander:hover {
+    border-right-style: solid;
+    border-right-color: #1890ff;
+}
