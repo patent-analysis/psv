@@ -21,7 +21,10 @@ const strings = {
     seqName: 'Sequence Name',
     add: 'Add',
     download: 'Download',
-    resultsFor: 'Results for'
+    resultsFor: 'Results for',
+    proteinNotFoundTitle: 'Error fetching protein data: ',
+    proteinNotFoundDesc: 'Please return to the search page and try again.',
+    proteinNotFound: 'Protein not found'
 }
 
 export default Object.freeze(strings);
