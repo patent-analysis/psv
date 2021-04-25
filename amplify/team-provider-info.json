@@ -56,15 +56,19 @@
       "function": {
         "bioMoleculesLambda": {
           "deploymentBucketName": "amplify-psv-dev-05408-deployment",
-          "s3Key": "amplify-builds/bioMoleculesLambda-534f77696d5a67717070-build.zip"
+          "s3Key": "amplify-builds/bioMoleculesLambda-61506e59756a4b734171-build.zip"
         },
         "patentUploadsLambda": {
           "deploymentBucketName": "amplify-psv-dev-05408-deployment",
-          "s3Key": "amplify-builds/patentUploadsLambda-6a44435a593361377063-build.zip"
+          "s3Key": "amplify-builds/patentUploadsLambda-75314a796d615073706e-build.zip"
         },
         "patentsLambda": {
           "deploymentBucketName": "amplify-psv-dev-05408-deployment",
-          "s3Key": "amplify-builds/patentsLambda-715677746373642f4b32-build.zip"
+          "s3Key": "amplify-builds/patentsLambda-67774c347668716a3249-build.zip"
+        },
+        "getProteins": {
+          "deploymentBucketName": "amplify-psv-dev-05408-deployment",
+          "s3Key": "amplify-builds/getProteins-66456b73615a7572476f-build.zip"
         }
       }
     }
