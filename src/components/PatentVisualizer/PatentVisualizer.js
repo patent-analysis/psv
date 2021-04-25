@@ -283,6 +283,10 @@ const PatentVisualizer = props => {
         const newDataset = sortDataset(data.concat(newSequence));
         setData(newDataset);
         _dataRef.current = newDataset;
+        // Make sure the slider updates to the maximum length if this sequence is the largest
+        if (newSequence.length > sequenceRange.length) {
+            setSequenceRange({ ...sequenceRange, length: newSequence.length });
+        }
 
         const isSeqDefined = manualSequenceList.some((elem) => elem.name === name);
         if (!isSeqDefined) {
