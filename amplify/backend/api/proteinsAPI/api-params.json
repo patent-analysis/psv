@@ -1,0 +1,35 @@
+{
+    "paths": [
+        {
+            "name": "/proteins",
+            "lambdaFunction": "getProteins",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/proteins"
+        }
+    ],
+    "resourceName": "proteinsAPI",
+    "apiName": "proteinsAPI",
+    "functionArns": [
+        {
+            "lambdaFunction": "getProteins"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-psv-dev-05408-authRole",
+        "unAuthRoleName": "amplify-psv-dev-05408-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "getProteins",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
