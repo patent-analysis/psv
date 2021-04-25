@@ -15,7 +15,7 @@ const Search = () => {
     let history = useHistory();
     const onFinish = (values) => {
         history.push({
-            pathname : '/results',
+            pathname : '/results/',
             search: `?proteinName=${values.protein}`,
             state: { proteinName: values.protein }
         });
