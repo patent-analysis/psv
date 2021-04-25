@@ -8,11 +8,7 @@
       "service": "DynamoDB",
       "providerPlugin": "awscloudformation"
     },
-    "psvpatents3": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation"
-    },
-    "psvdocs": {
+    "defaults3": {
       "service": "S3",
       "providerPlugin": "awscloudformation"
     }
