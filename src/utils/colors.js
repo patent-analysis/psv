@@ -6,22 +6,24 @@ const getRandomColor = () => {
     }
     return color;
 }
+const COLOR_PALETTE = ['#2D3047', '#F4442E', '#E0A458', 
+    '#FFDBB5', '#C04ABC', '#BCB6FF', '#82ABA1', '#C6F91F', '#D4C9C7'];
 /* 
  * Given an array of elements returns an objects where each element is the key and the value is a hexadecimal color code
 */
 const assignColors = (keys) => {
-    const colorTracker = {};
     const colors = {};
-
-    keys.forEach((element) => {
-        let randomColor = getRandomColor();
-        // Make sure we have not assigned that color yet
-        // We can make this better and make sure that colors are not too close to each other
-        while(colorTracker[randomColor]) {
-            randomColor = getRandomColor();
+    keys.forEach((element, index) => {
+        let color = COLOR_PALETTE[index];
+        // We try to pick from a predefined palette, if the number of keys is bigger than
+        // what we currently have we create a random color
+        if (index < COLOR_PALETTE.length) {
+            color = COLOR_PALETTE[index];
+        } else {
+            color = getRandomColor();
         }
-        colorTracker[randomColor] = true;
-        colors[element] = randomColor;
+
+        colors[element] = color;
     });
     return colors;
 };
