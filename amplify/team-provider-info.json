@@ -65,6 +65,10 @@
         "patentsLambda": {
           "deploymentBucketName": "amplify-psv-dev-05408-deployment",
           "s3Key": "amplify-builds/patentsLambda-67774c347668716a3249-build.zip"
+        },
+        "getProteins": {
+          "deploymentBucketName": "amplify-psv-dev-05408-deployment",
+          "s3Key": "amplify-builds/getProteins-7534722b676c7a365550-build.zip"
         }
       }
     }
