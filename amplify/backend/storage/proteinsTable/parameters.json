@@ -1,0 +1,5 @@
+{
+    "tableName": "proteinsTable",
+    "partitionKeyName": "proteinId",
+    "partitionKeyType": "S"
+}
