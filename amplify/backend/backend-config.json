@@ -37,11 +37,6 @@
         }
       ]
     },
-    "patentUploadsLambda": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
     "patentsLambda": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -82,20 +77,6 @@
     }
   },
   "api": {
-    "patentUploadAPI": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "patentUploadsLambda",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
-    },
     "patentsAPI": {
       "service": "API Gateway",
       "providerPlugin": "awscloudformation",
@@ -133,10 +114,5 @@
       "customAuth": false
     }
   },
-  "hosting": {
-    "S3AndCloudFront": {
-      "service": "S3AndCloudFront",
-      "providerPlugin": "awscloudformation"
-    }
-  }
+  "hosting": {}
 }
