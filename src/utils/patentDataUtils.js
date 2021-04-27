@@ -47,7 +47,7 @@ function getRandomAmino(){
 
 //TODO: baseline data should be read from a database
 let baseline = [];
-const MAX_SEQ_LENGTH = 500;
+const MAX_SEQ_LENGTH = 692;
 for (let i = 1; i <= MAX_SEQ_LENGTH; i++) {
     baseline.push({
         'patentNumber': 'Sequence',

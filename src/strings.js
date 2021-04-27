@@ -28,7 +28,10 @@ const strings = {
     editModalTitle: 'Edit Patent Data:',
     proteinNotFoundTitle: 'Error fetching protein data: ',
     proteinNotFoundDesc: 'Please return to the search page and try again.',
-    proteinNotFound: 'Protein not found'
+    proteinNotFound: 'Protein not found',
+    patentHideShow: 'Hide or show patent on visualization chart',
+    downloadChart: 'Download Chart',
+    saveChartTooltip: 'Save image of the current state of chart'
 }
 
 export default Object.freeze(strings);

@@ -3,7 +3,7 @@ import 'antd/dist/antd.css';
 import './PatentVisualizer.css';
 import { CloseOutlined } from '@ant-design/icons';
 import { Heatmap, G2 } from '@ant-design/charts';
-import { Modal, Layout, Button, Spin, Typography } from 'antd';
+import { Modal, Layout, Spin, Typography } from 'antd';
 import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
@@ -98,6 +98,7 @@ const PatentVisualizer = props => {
     const [tableDetails, setTableDetails] = useState([]);
     const [loading, isLoading] = useState(true);
     const [manualSequenceList, setManualSequenceList] = useState([]);
+    let _chartRef;
 
     const _dataRef = useRef([]);
     const [modalShow, setModalShow] = React.useState(false);
@@ -261,6 +262,12 @@ const PatentVisualizer = props => {
         setBaseline(e.target.checked);
     }
 
+    const downloadChart = () => {
+        if(_chartRef) {
+            _chartRef.downloadImage(`${proteinName}_chart_${sequenceRange.min}-${sequenceRange.max}`);
+        }
+    }
+
     const patentEditSubmit = (modifiedPatentDetails) => {
         let pat = tableDetails.find(p => p.patentNumber === editPatentDetails.patentNumber);
         for (const property in modifiedPatentDetails) {
@@ -272,7 +279,7 @@ const PatentVisualizer = props => {
 
     const onEditPatent = (patentNumber) => {
         let pat = tableDetails.find(p => p.patentNumber === patentNumber);
-        setEditPatentDetails(pat);
+        setEditPatentDetails(pat);        
         setModalShow(true);
     }
         
@@ -301,6 +308,11 @@ const PatentVisualizer = props => {
         });
         setManualSequenceList(newSeqList);
     }
+    const getChartRef = (chartElement) => {
+        if(chartElement) {
+            _chartRef = chartElement.getChart();
+        }
+    }
 
     return (
         [
@@ -326,9 +338,10 @@ const PatentVisualizer = props => {
                     onSequenceRangeFilterChange={onSequenceRangeFilterChange}
                     toggleBaseline={toggleBaseline}
                     addManualSequence={addManualSequence}
+                    downloadChart={downloadChart}
                 />
                 <Layout style={{ padding: '24px', overflow: 'auto' }}>
-                    <Heatmap onEvent={onEvent} {...config} />
+                    <Heatmap ref={getChartRef} onEvent={onEvent} {...config} />
                 </Layout>
                 {details.show &&
                     <Sider className="site-layout-background" theme="light" width={200} style={{ padding: '20px' }}>
@@ -338,13 +351,6 @@ const PatentVisualizer = props => {
                         <div>Patent Name: {details.patentId}</div>
                         <div>Sequence Index - Name: {details.seqPosition}</div>
                         <div>Assignee: {details.assignee}</div>
-                        <div>Other relevant data: </div>
-                        <div>Link to PDF</div>
-                        <div>Text extracted</div>
-                        <div className="visualizer__edit-button-container">
-                            <Button type="primary">Edit Data</Button>
-
-                        </div>
                     </Sider>
                 }
             </Layout>,
