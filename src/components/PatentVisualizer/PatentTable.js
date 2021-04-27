@@ -1,6 +1,6 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { Table, Space, Checkbox, Button } from 'antd';
+import { Table, Space, Checkbox, Button, Tooltip } from 'antd';
 import StringManager from '../../utils/StringManager';
 
 const getLensUrl = (patent) => `https://www.lens.org/lens/search/patent/list?q=${patent}&preview=true`
@@ -11,9 +11,15 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
         title: '',
         key: 'show',
         render: (__text, record) => (
-            <Checkbox onChange={() => toggleShow(record.patentNumber)} 
-                checked={displayedPatents[record.patentNumber]}
-            />
+            <Tooltip
+                trigger={['hover']}
+                title={StringManager.get('patentHideShow')}
+                placement="topLeft"
+            >
+                <Checkbox onChange={() => toggleShow(record.patentNumber)} 
+                    checked={displayedPatents[record.patentNumber]}
+                />
+            </Tooltip>
         ),
     },
     {

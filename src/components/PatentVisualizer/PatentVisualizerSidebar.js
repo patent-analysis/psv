@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Layout, Menu, Checkbox, Slider, InputNumber, Input, Tooltip } from 'antd';
+import { Layout, Menu, Checkbox, Slider, InputNumber, Input, Tooltip, Button } from 'antd';
 import 'antd/dist/antd.css';
 import './PatentVisualizer.css';
 import { UserOutlined } from '@ant-design/icons';
 import StringManager from '../../utils/StringManager';
 import ColorSquare from './ColorSquare';
+import { DownloadOutlined } from '@ant-design/icons';
 const { SubMenu } = Menu;
 const { Sider } = Layout;
 const { Search } = Input;
@@ -159,6 +160,17 @@ const PatentVisualizerSidebar = (props) => {
                     <Checkbox onChange={props.toggleBaseline} checked={props.showBaseline}>
                         {StringManager.get('showAminoSequence')}
                     </Checkbox>
+                </Menu.Item>
+                <Menu.Item style={{ display: 'flex' }}>
+                    <Tooltip
+                        trigger={['hover']}
+                        title={StringManager.get('saveChartTooltip')}
+                        placement="topLeft"
+                    >
+                        <Button style={{ margin: 'auto' }} onClick={props.downloadChart} type="primary" icon={<DownloadOutlined />} size={'small'}>
+                            {StringManager.get('downloadChart')}
+                        </Button>
+                    </Tooltip>
                 </Menu.Item>
             </Menu>
         </Sider>
