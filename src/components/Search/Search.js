@@ -3,16 +3,12 @@ import StringManager from '../../utils/StringManager';
 import './Search.css';
 import { useHistory } from 'react-router-dom';
 import logo from '../../assets/logo.png';
-
-//TODO: Replace this static list with a list of all protein Ids available in the database.
-const options = [
-    {
-        value: 'PCSK9',
-    }
-];
+import { getProteinList } from '../../utils/patentDataUtils';
+import { useState, useEffect } from 'react';
 
 const Search = () => {
     let history = useHistory();
+    const [inputOptions, setInputOptions] = useState([]);
     const onFinish = (values) => {
         history.push({
             pathname : '/results/',
@@ -21,6 +17,13 @@ const Search = () => {
         });
         console.log('Searching for patent details for:', values);
     };
+
+    useEffect(() => {
+        getProteinList().then((data) => {
+            const optionList = data.map((protein) => ({ value: protein.proteinId }));
+            setInputOptions(optionList);
+        }).catch((error) => console.debug(error));
+    }, []);
 
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
@@ -41,7 +44,7 @@ const Search = () => {
             >
                 <AutoComplete
                     size="large"
-                    options={options}
+                    options={inputOptions}
                     placeholder={StringManager.get('selectProtein')}
                     filterOption={(inputValue, option) => option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
                 />
