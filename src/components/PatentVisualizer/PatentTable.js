@@ -50,10 +50,11 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
     },
     {
         title: 'Action',
+        align: 'center',
         key: 'action',
         render: (text, record) => (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <a href={getUSPTODownloadUrl(record.patentNumber)} style={{ marginBottom: '10px' }}rel="noreferrer" target="_blank">{StringManager.get('download')}</a>
+                <a href={getUSPTODownloadUrl(record.patentNumber)} style={{ margin: 'auto' }}rel="noreferrer" target="_blank">{StringManager.get('download')}</a>
                 <Button type="link" onClick={() => {
                     Modal.info({
                         title: `${StringManager.get('legalOpinion')} ${record.patentNumber}`,
