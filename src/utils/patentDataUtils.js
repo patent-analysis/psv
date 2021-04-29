@@ -29,6 +29,20 @@ function getProteinList() {
     return API.get(apiName, path, myInit);
 }
 
+function addProteinToList(proteinObj) {
+    /**
+     * Fetch patent details from the patents database for the given $proteinId
+     */
+    const apiName = 'proteinsAPI';
+    const path = '/proteins'; 
+    const myInit = { 
+        headers: {}, 
+        body: proteinObj,
+        response: false, // Only return response.data
+    };
+    return API.put(apiName, path, myInit);
+}
+
 function savePatentData(data){
     const apiName = 'patentsAPI';
     const path = '/patents';
@@ -129,6 +143,7 @@ function generateVisualizationDataset(patentData) {
 export {
     getPatentData,
     getProteinList,
+    addProteinToList,
     generateVisualizationDataset,
     savePatentData,
     sortDataset
