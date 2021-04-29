@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Input, Modal } from 'antd';
 import StringManager from '../../utils/StringManager';
+const { TextArea } = Input;
 
 function EditModalDialog(props) {
     const [isModalVisible] = useState(props.isOpen);
@@ -58,7 +59,7 @@ function EditModalDialog(props) {
                         setClaimed(e.target.value)
                     }} />
                 {StringManager.get('legalOpinion') + ': '}
-                <Input value={patentLegalOpinion}
+                <TextArea value={patentLegalOpinion}
                     onChange={(e) => {
                         setPatentLegalOpinion(e.target.value)
                     }} />

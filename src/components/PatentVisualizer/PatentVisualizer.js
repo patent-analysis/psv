@@ -286,8 +286,17 @@ const PatentVisualizer = props => {
         for (const property in modifiedPatentDetails) {
             pat[property] = modifiedPatentDetails[property];
         }
-        savePatentData(pat);
-        setModalShow(false);
+        return savePatentData(pat)
+            .then(() => {
+                setModalShow(false);
+                window.location.reload();
+            }).catch((error) => {
+                Modal.error({
+                    title: StringManager.get('errorPatentEdit'),
+                    content: `Error message: ${error}`
+                });
+            });
+        
     }
 
     const onEditPatent = (patentNumber) => {

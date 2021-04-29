@@ -1,6 +1,6 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { Table, Space, Checkbox, Button, Tooltip } from 'antd';
+import { Table, Modal, Checkbox, Button, Tooltip } from 'antd';
 import StringManager from '../../utils/StringManager';
 
 const getLensUrl = (patent) => `https://www.lens.org/lens/search/patent/list?q=${patent}&preview=true`
@@ -52,9 +52,17 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
         title: 'Action',
         key: 'action',
         render: (text, record) => (
-            <Space size="middle">
-                <a href={getUSPTODownloadUrl(record.patentNumber)} rel="noreferrer" target="_blank">{StringManager.get('download')}</a>
-            </Space>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <a href={getUSPTODownloadUrl(record.patentNumber)} style={{ marginBottom: '10px' }}rel="noreferrer" target="_blank">{StringManager.get('download')}</a>
+                <Button type="link" onClick={() => {
+                    Modal.info({
+                        title: `${StringManager.get('legalOpinion')} ${record.patentNumber}`,
+                        content: record.patentLegalOpinion
+                    });
+                }}>
+                    {StringManager.get('legalOpinion')}
+                </Button>
+            </div>
         ),
     },
     {
