@@ -208,6 +208,19 @@ const PatentVisualizer = props => {
                 return 'transparent';
             }
         },
+        tooltip: {
+            customContent: (title, data) => {
+                if(data.length > 0) {
+                    return (`
+                        <div class="chartTooltip__container">
+                            <p>${title}</p>
+                            <p>SEQ ID 6</p>
+                            <p><span>${data[0].name}:     <span><span>${data[0].value}<span></p>
+                            <p><span>Amino Acid:     <span><span>${data[0].data[KEYS.aminoAcid]}<span></p>
+                        </div>`);
+                }
+            }
+        },
         label: {
             offset: -2,
             style: {
