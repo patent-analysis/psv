@@ -25,3 +25,9 @@
     border-right-style: solid;
     border-right-color: #1890ff;
 }
+.chartTooltip__container {
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    font-size: large;
+}

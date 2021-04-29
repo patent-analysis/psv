@@ -31,7 +31,8 @@ const strings = {
     proteinNotFound: 'Protein not found',
     patentHideShow: 'Hide or show patent on visualization chart',
     downloadChart: 'Download Chart',
-    saveChartTooltip: 'Save image of the current state of chart'
+    saveChartTooltip: 'Save image of the current state of chart',
+    errorPatentEdit: 'Something went wrong editing patent'
 }
 
 export default Object.freeze(strings);
