@@ -1,0 +1,44 @@
+{
+    "paths": [
+        {
+            "name": "/patentUploads",
+            "lambdaFunction": "patentUploadsLambda",
+            "privacy": {
+                "protected": true,
+                "auth": [
+                    "/POST",
+                    "/GET",
+                    "/PUT",
+                    "/PATCH"
+                ],
+                "unauth": [
+                    "/GET"
+                ]
+            },
+            "policyResourceName": "/patentUploads"
+        }
+    ],
+    "resourceName": "patentUploadAPI",
+    "apiName": "patentUploadAPI",
+    "functionArns": [
+        {
+            "lambdaFunction": "patentUploadsLambda"
+        }
+    ],
+    "privacy": {
+        "auth": 1,
+        "unauth": 1,
+        "authRoleName": "amplify-psv-dev-10725-authRole",
+        "unAuthRoleName": "amplify-psv-dev-10725-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "patentUploadsLambda",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
