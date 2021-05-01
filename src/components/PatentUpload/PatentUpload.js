@@ -37,16 +37,17 @@ class PatentUpload extends Component {
             /* If the input passes, iterate through all the files the user uploads
                 to the S3 bucket in a folder named public and then the protein name the user input
                 ex. s3bucket/public/PCSK9/1234.pdf */
+            
             Promise.all(Array.from(input.files).map((file) => {
-                return Storage.put(`${proteinName.toLowerCase()}/${file.name}`,
+                var uploadResult = Storage.put(`${proteinName.toLowerCase()}/${file.name}`,
                     file,
                     {
                         bucket: 'psv-document-storage',
-                        contentType: file.type,
                         customPrefix: {
                             public: ''
                         }
                     });
+                return uploadResult;
             }))
                 .then(() => {
                     return addProteinToList({ 
