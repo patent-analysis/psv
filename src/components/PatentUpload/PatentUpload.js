@@ -39,7 +39,8 @@ class PatentUpload extends Component {
                 ex. s3bucket/public/PCSK9/1234.pdf */
             
             Promise.all(Array.from(input.files).map((file) => {
-                var uploadResult = Storage.put(`${proteinName.toLowerCase()}/${file.name}`,
+                // IMPORTANT: We use the path from S3 to trigger the text mining process in ta repo
+                var uploadResult = Storage.put(`${proteinName}/${file.name}`,
                     file,
                     {
                         bucket: 'psv-document-storage',
