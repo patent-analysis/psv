@@ -20,6 +20,7 @@ const KEYS = {
     assignee: 'patentAssignees',
     sequencePosition: 'sequencePosition',
     patentNumber: 'patentNumber',
+    patentNumberAndSeq: 'patentNumberAndSeq',
     claimed: 'Claimed',
     aminoAcid: 'Amino Acid',
     baseline: 'Sequence',
@@ -47,13 +48,15 @@ const sequenceStringToArray = (seqString, name) => {
                 'patentNumber': `${KEYS.baseline}_${name}`,
                 'patentAssignees': KEYS.baseline,
                 'sequencePosition': (index + 1).toString(),
-                'Amino Acid': char
+                'Amino Acid': char,
+                'patentNumberAndSeq': `${KEYS.baseline}_${name}`,
+                'Claimed': false,
             }
         });
 }
 
 
-const G2DrawResidues = (details) => {
+const G2DrawResidues = (details, colors) => {
     G2.registerShape('polygon', 'boundary-polygon', {
         draw: function draw(cfg, container) {
             const group = container.addGroup();
@@ -66,8 +69,14 @@ const G2DrawResidues = (details) => {
                 ['L', points[3].x, points[3].y],
                 ['Z'],
             ];
+            let fillColor;
+            if(cfg.data.Claimed) {
+                fillColor = colors[cfg.data.patentAssignees];
+            } else if(cfg.data.patentAssignees.includes(KEYS.baseline)) {
+                fillColor = 'transparent';
+            }
             const attrs = {
-                fill: cfg.color,
+                fill: fillColor,
                 path: [],
             };
             attrs.path = this.parsePath(path);
@@ -103,7 +112,7 @@ const PatentVisualizer = props => {
     const _dataRef = useRef([]);
     const [modalShow, setModalShow] = React.useState(false);
     const [editPatentDetails, setEditPatentDetails] = useState({});
-    G2DrawResidues(details);
+    G2DrawResidues(details, colorKeys);
     useEffect(() => {
         (async function () {
             try {
@@ -198,16 +207,9 @@ const PatentVisualizer = props => {
         xField: KEYS.sequencePosition,
         xAxis: gridStyles,
         yAxis: gridStyles,
-        yField: KEYS.patentNumber,
+        yField: KEYS.patentNumberAndSeq,
         colorField: KEYS.assignee,
         shape: 'boundary-polygon',
-        color: (assignee) => {
-            if (assignee !== KEYS.baseline) {
-                return colorKeys[assignee];
-            } else {
-                return 'transparent';
-            }
-        },
         tooltip: {
             customContent: (title, data) => {
                 if(data.length > 0) {
@@ -230,6 +232,8 @@ const PatentVisualizer = props => {
             },
             formatter: (residueData) => {
                 if(residueData[KEYS.patentNumber].includes(KEYS.baseline) && showBaseline) {
+                    return residueData[KEYS.aminoAcid];
+                } else if(residueData.Claimed && showBaseline) {
                     return residueData[KEYS.aminoAcid];
                 }
             }

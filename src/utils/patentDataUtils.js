@@ -80,7 +80,9 @@ for (let i = 1; i <= MAX_SEQ_LENGTH; i++) {
         'patentNumber': 'Sequence',
         'patentAssignees': 'Sequence',
         'sequencePosition': i.toString(),
-        'Amino Acid': getRandomAmino()
+        'Amino Acid': getRandomAmino(),
+        'patentNumberAndSeq': 'Sequence',
+        'Claimed': false,
     })
 }
 
@@ -95,7 +97,7 @@ function sortDataset(dataset) {
         } else if (parseInt(a['sequencePosition']) > parseInt(b['sequencePosition'])) {
             return 1;
         } else {
-            if (a['patentNumber'] === 'Sequence') {
+            if (a['patentNumber'].includes('Sequence')) {
                 return -1;
             }
             if(parseInt(a['patentNumber']) < parseInt(b['patentNumber'])) {
@@ -107,6 +109,14 @@ function sortDataset(dataset) {
         return 0;
     });
 }
+function findSequenceBySeqId(sequenceArray, seqId) {
+    for(let i = 0; i < sequenceArray.length; i++) {
+        if(sequenceArray[i].seqIdNo === seqId) {
+            return sequenceArray[i].value.match(/.{1,3}/g);;
+        }
+    }
+    return [];
+}
 
 function generateVisualizationDataset(patentData) {
     /**
@@ -114,30 +124,44 @@ function generateVisualizationDataset(patentData) {
      * lists of claimed residues. This function explodes the patentData to generate JSONs
      * for every claimed reside - to build the heat map visualization.
      */
-    var visualizationDataset = [];
-    var i = 0;
+    let visualizationDataset = [];
+    let i = 0;
 
     patentData.forEach((patentInfo) => {
         const assignee = patentInfo['patentAssignees']
         const patentNumber = patentInfo['patentNumber']
-        const residues = patentInfo['claimedResidues']
-        const residuesList = residues.split(',')
-
-        residuesList.forEach((sequencePosition) => {
-            const visualizationData = {
-                'patentAssignees': assignee,
-                'patentNumber': patentNumber,
-                'sequencePosition': sequencePosition.trim(),
-                'Claimed': true,
-                'Amino Acid': getRandomAmino()  //TODO: amino acid data should be read from a database
-            };
-            visualizationDataset[i] = visualizationData;
-            i++;
-        });
-        
+        const mentionedResidues = patentInfo['mentionedResidues'];
+        for(let j = 0; j < mentionedResidues.length; j++) {
+            const residuesList = mentionedResidues[j].claimedResidues.filter((residue) => residue);
+            const residueMap = {}
+            // We create a map here so we do not go through the list each time on each sequence iteration
+            // to see if the position is in the residue list array
+            residuesList.forEach((residue) => {
+                residueMap[residue] = true;
+            });
+            const sequence = findSequenceBySeqId(patentInfo['sequences'], mentionedResidues[j].seqId);
+            // eslint-disable-next-line
+            sequence.forEach((aminoAcid, index) => {
+                const sequencePosition = index + 1;
+                const sequenceInt = parseInt(sequencePosition);
+                // If the residue position is larger than our aminoacid list we ignore this data
+                if (sequenceInt < sequence.length) {
+                    const visualizationData = {
+                        'patentAssignees': assignee,
+                        'patentNumber': patentNumber,
+                        'sequencePosition': sequencePosition.toString(),
+                        'Claimed': residueMap[sequencePosition.toString()] || false,
+                        'Amino Acid': aminoAcid,
+                        'patentNumberAndSeq': `${patentNumber}_SEQID_${mentionedResidues[j].seqId}`
+                    };
+                    visualizationDataset[i] = visualizationData;
+                    i++;
+                }
+            });
+        }
     });
 
-    return sortDataset(visualizationDataset.concat(baseline));
+    return sortDataset(visualizationDataset);
 }
 
 export {
