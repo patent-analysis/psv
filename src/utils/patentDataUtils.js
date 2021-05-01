@@ -150,7 +150,7 @@ function generateVisualizationDataset(patentData) {
                         'patentAssignees': assignee,
                         'patentNumber': patentNumber,
                         'sequencePosition': sequencePosition.toString(),
-                        'Claimed': residueMap[sequencePosition.toString()] || false,
+                        'Claimed': (residueMap[sequencePosition.toString()] && mentionedResidues[j].location === 'claim') || false,
                         'Amino Acid': aminoAcid,
                         'patentNumberAndSeq': `${patentNumber}_SEQID_${mentionedResidues[j].seqId}`
                     };
