@@ -234,7 +234,7 @@ const PatentVisualizer = props => {
                 if(residueData[KEYS.patentNumber].includes(KEYS.baseline) && showBaseline) {
                     return residueData[KEYS.aminoAcid];
                 } else if(residueData.Claimed && showBaseline) {
-                    return residueData[KEYS.aminoAcid];
+                    return residueData[KEYS.aminoAcid][0];
                 }
             }
         },
