@@ -40,7 +40,7 @@ class PatentUpload extends Component {
             
             Promise.all(Array.from(input.files).map((file) => {
                 // IMPORTANT: We use the path from S3 to trigger the text mining process in ta repo
-                var uploadResult = Storage.put(`${proteinName}/${file.name}`,
+                var uploadResult = Storage.put(`${proteinName.toUpperCase()}/${file.name}`,
                     file,
                     {
                         bucket: 'psv-document-storage',
@@ -52,7 +52,7 @@ class PatentUpload extends Component {
             }))
                 .then(() => {
                     return addProteinToList({ 
-                        proteinId: proteinName
+                        proteinId: proteinName.toUpperCase()
                     });
                 })
                 .then(() => {
