@@ -2,11 +2,13 @@ import { Component } from 'react';
 import { Storage } from 'aws-amplify';
 import { getProteinList, addProteinToList } from '../../utils/patentDataUtils';
 import awsExports from '../.././aws-exports';
+import { Spin } from 'antd';
 import './PatentUpload.css';
 
 class PatentUpload extends Component {
     // Initialize state
     state = {
+        loading: false,
         imageName: '',
         imageFile: '',
         response: '',
@@ -37,7 +39,7 @@ class PatentUpload extends Component {
             /* If the input passes, iterate through all the files the user uploads
                 to the S3 bucket in a folder named public and then the protein name the user input
                 ex. s3bucket/public/PCSK9/1234.pdf */
-            
+            this.setState({ loading: true });
             Promise.all(Array.from(input.files).map((file) => {
                 // IMPORTANT: We use the path from S3 to trigger the text mining process in ta repo
                 var uploadResult = Storage.put(`${proteinName.toUpperCase()}/${file.name}`,
@@ -65,7 +67,10 @@ class PatentUpload extends Component {
                     alert('Success Uploading File! ');
                     window.location.reload(true);
                 })
-                .catch((err) => this.setState({ response: `Error uploading file: ${err}` }));
+                .catch((err) => this.setState({ response: `Error uploading file: ${err}` }))
+                .finally(() => {
+                    this.setState({ loading: false });
+                });
         }
     };
 
@@ -128,8 +133,8 @@ class PatentUpload extends Component {
                     <label className="toUploadLabel" for="toUploadLabel">Patents to be Upload: </label>
                     <div className="fileList" id="fileList" ref={ref => (this.fileList = ref)}></div>
                 </div>
-                <button className="uploadButton" onClick={this.uploadPatent}> Upload Files </button>
-
+                
+                {!this.state.loading ? <button className="uploadButton" onClick={this.uploadPatent}> Upload Files </button> : <Spin /> }
                 {!!this.state.response && <div>{this.state.response}</div>}
             </div>
         );
