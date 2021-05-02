@@ -152,6 +152,7 @@ function generateVisualizationDataset(patentData) {
                         'sequencePosition': sequencePosition.toString(),
                         'Claimed': (residueMap[sequencePosition.toString()] && mentionedResidues[j].location === 'claim') || false,
                         'Amino Acid': aminoAcid,
+                        'seqId': mentionedResidues[j].seqId,
                         'patentNumberAndSeq': `${patentNumber}_SEQID_${mentionedResidues[j].seqId}`
                     };
                     visualizationDataset[i] = visualizationData;

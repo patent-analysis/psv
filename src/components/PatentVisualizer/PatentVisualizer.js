@@ -26,6 +26,7 @@ const KEYS = {
     baseline: 'Sequence',
     patentName: 'Patent Name',
     patentFiled: 'Patent Filed',
+    seqId: 'seqId'
 }
 Object.freeze(KEYS);
 
@@ -212,13 +213,14 @@ const PatentVisualizer = props => {
         shape: 'boundary-polygon',
         tooltip: {
             customContent: (title, data) => {
-                if(data.length > 0) {
+                if(data.length > 0 && !data[0].data[KEYS.patentNumber].includes(KEYS.baseline)) {
                     return (`
                         <div class="chartTooltip__container">
-                            <p>${title}</p>
-                            <p>SEQ ID 6</p>
-                            <p><span>${data[0].name}:     <span><span>${data[0].value}<span></p>
-                            <p><span>Amino Acid:     <span><span>${data[0].data[KEYS.aminoAcid]}<span></p>
+                            <p class="chartTooltip__line">${title}</p>
+                            <p class="chartTooltip__line">SEQ ID: ${data[0].data[KEYS.seqId]}</p>
+                            <p class="chartTooltip__line">${data[0].name}</p>
+                            <p class="chartTooltip__line">${data[0].data[KEYS.patentNumber]}</p>
+                            <p class="chartTooltip__line"><span>Amino Acid:     <span><span>${data[0].data[KEYS.aminoAcid]}<span></p>
                         </div>`);
                 }
             }
