@@ -133,7 +133,6 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
 ];
 
 const PatentTable= ({ patentData, onPatentNumberFilterChange, displayedPatents, onEditPatent }) => {
-    console.log('PATENT DATA TABLE', patentData);
     return <Table bordered columns={getColumns(onPatentNumberFilterChange, displayedPatents, onEditPatent)} dataSource={patentData} />
 }
 
