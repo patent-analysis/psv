@@ -4,6 +4,7 @@ const strings = {
     uploadPatents: 'Upload Patents',
     selectEpitope: 'Sequence',
     selectProtein: 'Protein Name',
+    residues: 'Residues',
     appOwnershipFooter: 'Patent Visualization App - Created by OpenPSV',
     filterByAssignee: 'Filter By Assignee',
     filterBySequencePosition: 'Filter By Sequence Position',

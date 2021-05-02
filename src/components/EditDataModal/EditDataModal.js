@@ -4,9 +4,9 @@ import { DownOutlined } from '@ant-design/icons';
 import StringManager from '../../utils/StringManager';
 const { TextArea } = Input;
 
-const getClaimedResidues = (seqId, claimedResidues) => {
+const getClaimedResidues = (seqIdSelected, claimedResidues) => {
     for(let i = 0; i < claimedResidues.length; i++) {
-        if(claimedResidues[i].seqId === seqId) {
+        if(claimedResidues[i].seqId === seqIdSelected.seqId && claimedResidues[i].location === seqIdSelected.location) {
             return claimedResidues[i];
         }
     }
@@ -20,17 +20,17 @@ function EditModalDialog(props) {
     const [claimed, setClaimed] = useState(props.patentDetails.mentionedResidues);
     const [patentLegalOpinion, setPatentLegalOpinion] = useState(props.patentDetails.patentLegalOpinion);
     const [inventors, setInventors] = useState(props.patentDetails.inventors);
-    const [seqIdSelected, setSeqIdSelected] = useState(props.patentDetails.mentionedResidues[0].seqId);
+    const [seqIdSelected, setSeqIdSelected] = useState({ seqId: props.patentDetails.mentionedResidues[0].seqId, location: props.patentDetails.mentionedResidues[0].location });
     let residuesBySeqId = [];
     if(claimed) {
         residuesBySeqId = claimed.map((data, index) => (
             <Menu.Item key={index}
                 onClick={() => {
-                    setSeqIdSelected(data.seqId);
+                    setSeqIdSelected({ seqId: data.seqId, location: data.location });
                 }}
             >
                 <Button type="link">
-                    {data.seqId}
+                    {`SEQ ID: ${data.seqId} (${data.location})`}
                 </Button>
             </Menu.Item>
         ));
@@ -89,15 +89,15 @@ function EditModalDialog(props) {
                     }} />
                 <Dropdown overlay={dropdownList} trigger={['click']}>
                     <Button style={{ paddingLeft: 0, fontSize: 'large' }} type="link" onClick={e => e.preventDefault()}>
-                        {`SEQ ID: ${seqIdSelected}`} <DownOutlined />
+                        {`SEQ ID: ${seqIdSelected.seqId} (${seqIdSelected.location})`} <DownOutlined />
                     </Button>
                 </Dropdown>
                 <div>
-                    {StringManager.get('claimedResidues') + ': '}
+                    {StringManager.get('residues') + ': '}
                     <Input style={inputStyle} value={getClaimedResidues(seqIdSelected, claimed).claimedResidues}
                         onChange={(e) => {
                             const newClaimed = claimed.map((residues) => {
-                                if(residues.seqId === seqIdSelected) {
+                                if(residues.seqId === seqIdSelected.seqId && residues.location === seqIdSelected.location) {
                                     return { ...residues, claimedResidues: e.target.value.split(',') };
                                 } else {
                                     return residues;
