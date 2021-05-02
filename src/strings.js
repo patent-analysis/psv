@@ -4,6 +4,7 @@ const strings = {
     uploadPatents: 'Upload Patents',
     selectEpitope: 'Sequence',
     selectProtein: 'Protein Name',
+    residues: 'Residues',
     appOwnershipFooter: 'Patent Visualization App - Created by OpenPSV',
     filterByAssignee: 'Filter By Assignee',
     filterBySequencePosition: 'Filter By Sequence Position',
@@ -17,7 +18,7 @@ const strings = {
     patentFiled: 'Patent Filed',
     patentDate: 'Patent Date',
     legalOpinion: 'Legal Opinion',
-    issueDate: 'Issue Data',
+    issueDate: 'Issue Date',
     tooltipSeqName: 'Text to display on the Y-axis',
     tooltipSeqExample: 'One character sequence. Example: IRNISNPN..',
     addSeq: 'Add Sequence',
@@ -32,7 +33,10 @@ const strings = {
     patentHideShow: 'Hide or show patent on visualization chart',
     downloadChart: 'Download Chart',
     saveChartTooltip: 'Save image of the current state of chart',
-    errorPatentEdit: 'Something went wrong editing patent'
+    errorPatentEdit: 'Something went wrong editing patent',
+    mentionedResidues: 'Mentioned Residues',
+    mentionedResiduesTooltip: 'Residues mentioned outside claims',
+    inventors: 'Inventors'
 }
 
 export default Object.freeze(strings);

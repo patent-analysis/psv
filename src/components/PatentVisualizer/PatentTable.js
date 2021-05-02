@@ -1,8 +1,9 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { Table, Modal, Checkbox, Button, Tooltip } from 'antd';
+import { Table, Modal, Checkbox, Button, Tooltip, Typography } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import StringManager from '../../utils/StringManager';
-
+const { Title } = Typography;
 const getLensUrl = (patent) => `https://www.lens.org/lens/search/patent/list?q=${patent}&preview=true`
 const getUSPTODownloadUrl = (patent) => `https://pdfpiw.uspto.gov/.piw?Docid=${patent}&idkey=NONE&homeurl=http%3A%252F%252Fpatft.uspto.gov%252Fnetahtml%252FPTO%252Fpatimg.htm`
 
@@ -35,8 +36,18 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
     },
     {
         title: StringManager.get('issueDate'),
-        dataIndex: 'patentDate',
-        key: 'patentDate',
+        dataIndex: 'createdDate',
+        key: 'createdDate',
+        render: (text, record) => {
+            const date = new Date(record.createdDate);
+            var month = date.getUTCMonth() + 1; //months from 1-12
+            var day = date.getUTCDate();
+            var year = date.getUTCFullYear();
+
+            return (
+                <p>{`${month}/${day}/${year}`}</p>
+            )
+        }
     },
     {
         title: StringManager.get('assignee'),
@@ -44,9 +55,55 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
         key: 'patentAssignees',
     },
     {
+        title: StringManager.get('inventors'),
+        dataIndex: 'inventors',
+        key: 'inventors',
+    },
+    {
+        title: () => (
+            <Tooltip
+                trigger={['hover']}
+                title={StringManager.get('mentionedResiduesTooltip')}
+                placement="topLeft"
+            >
+                <p>{StringManager.get('mentionedResidues')} <InfoCircleOutlined /></p>
+            </Tooltip>
+        ),
+        dataIndex: 'mentionedResidues',
+        key: 'mentionedResidues',
+        render: (text, record) => {
+            const elements = record.mentionedResidues.map((mention, index) => {
+                if(mention.location !== 'claim') {
+                    return (
+                        <div key={`${mention.seqId}_${index}`}>
+                            <Title level={5}>SEQ ID: {mention.seqId}</Title>
+                            <p>{mention.claimedResidues.filter((residue) => residue).join(', ')}</p>
+                        </div>
+                    )
+                }
+                return null;
+            })
+            return elements;
+        }
+    },
+    {
         title: StringManager.get('claimedResidues'),
-        dataIndex: 'claimedResidues',
-        key: 'claimedResidues',
+        dataIndex: 'mentionedResidues',
+        key: 'mentionedResidues',
+        render: (text, record) => {
+            const elements = record.mentionedResidues.map((mention, index) => {
+                if(mention.location === 'claim') {
+                    return (
+                        <div key={`${mention.seqId}_${index}`}>
+                            <Title level={5}>SEQ ID: {mention.seqId}</Title>
+                            <p>{mention.claimedResidues.filter((residue) => residue).join(', ')}</p>
+                        </div>
+                    )
+                }
+                return null;
+            })
+            return elements;
+        }
     },
     {
         title: 'Action',
@@ -76,7 +133,7 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
 ];
 
 const PatentTable= ({ patentData, onPatentNumberFilterChange, displayedPatents, onEditPatent }) => {
-    return <Table columns={getColumns(onPatentNumberFilterChange, displayedPatents, onEditPatent)} dataSource={patentData} />
+    return <Table bordered columns={getColumns(onPatentNumberFilterChange, displayedPatents, onEditPatent)} dataSource={patentData} />
 }
 
 export default PatentTable;
