@@ -127,7 +127,7 @@ const PatentVisualizer = props => {
                 const titleExtension = proteinName === null ? StringManager.get('proteinNotFound') : proteinName; 
                 Modal.error({
                     title: StringManager.get('proteinNotFoundTitle') + titleExtension,
-                    content: StringManager.get('proteinNotFoundDesc')
+                    content: StringManager.get('proteinNotFoundDesc') + `\n Send developers this error message: ${error.message} ${error.stack}`
                 });
             }
         })();
