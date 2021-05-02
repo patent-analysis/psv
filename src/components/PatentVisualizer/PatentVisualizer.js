@@ -123,11 +123,12 @@ const PatentVisualizer = props => {
                 }
                 isLoading(false);
                 setPatentData(patentData);
+                throw new Error('test error should show in modal');
             } catch(error) {
                 const titleExtension = proteinName === null ? StringManager.get('proteinNotFound') : proteinName; 
                 Modal.error({
                     title: StringManager.get('proteinNotFoundTitle') + titleExtension,
-                    content: StringManager.get('proteinNotFoundDesc')
+                    content: StringManager.get('proteinNotFoundDesc') + `\n Send developers this error message: ${error.message} ${error.stack}`
                 });
             }
         })();
