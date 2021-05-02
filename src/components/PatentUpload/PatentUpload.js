@@ -134,8 +134,7 @@ class PatentUpload extends Component {
                     <div className="fileList" id="fileList" ref={ref => (this.fileList = ref)}></div>
                 </div>
                 
-                {!this.state.loading ? <button className="uploadButton" onClick={this.uploadPatent}> Upload Files </button> : null }
-                {this.state.loading ? <Spin /> : null }
+                {!this.state.loading ? <button className="uploadButton" onClick={this.uploadPatent}> Upload Files </button> : <Spin /> }
                 {!!this.state.response && <div>{this.state.response}</div>}
             </div>
         );
