@@ -8,7 +8,8 @@ import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
-import { getPatentData, generateVisualizationDataset, savePatentData, sortDataset } from '../../utils/patentDataUtils';
+import { AMINO_ACID_CODE, AMINO_THREE_LETTER_CODE } from '../../utils/aminoAcidTable';
+import { getPatentData, generateVisualizationDataset, savePatentData, sortDataset, mergeSequenceWithResidues, postAlignSequences } from '../../utils/patentDataUtils';
 import { useLocation } from 'react-router-dom';
 import EditModalDialog from '../EditDataModal/EditDataModal'
 import StringManager from '../../utils/StringManager';
@@ -97,6 +98,18 @@ const G2DrawResidues = (details, colors) => {
     });
 }
 
+const alignDisplayedData = async (data) => {
+    const alignedFormat = data.map((patent) => ({ 
+        docId: patent.docId, 
+        seqs: patent.mentionedResidues.map((seqInfo) => ({ 
+            ...seqInfo, 
+            value: seqInfo.value.map((threeLetterAmino) => AMINO_THREE_LETTER_CODE[threeLetterAmino]) 
+        }))
+    }));
+    const alignedData = await postAlignSequences(alignedFormat);
+    return data.map((patent, index) => ({ ...patent, mentionedResidues: alignedData[index].seqs }))
+}
+
 const PatentVisualizer = props => {
     const location = useLocation();
     const query = new URLSearchParams(location.search);
@@ -114,15 +127,18 @@ const PatentVisualizer = props => {
     const [modalShow, setModalShow] = React.useState(false);
     const [editPatentDetails, setEditPatentDetails] = useState({});
     G2DrawResidues(details, colorKeys);
+
     useEffect(() => {
         (async function () {
             try {
                 const patentData = await getPatentData(proteinName);
+                const structuredPatentData = mergeSequenceWithResidues(patentData);
+                const alignedPatentData = await alignDisplayedData(structuredPatentData);
                 if(!patentData || patentData.length === 0) {
                     throw Error('no data');
                 }
                 isLoading(false);
-                setPatentData(patentData);
+                setPatentData(alignedPatentData);
             } catch(error) {
                 const titleExtension = proteinName === null ? StringManager.get('proteinNotFound') : proteinName; 
                 Modal.error({
@@ -277,6 +293,32 @@ const PatentVisualizer = props => {
         });
     }
 
+    const onClickAlignSequence = async () => {
+        console.log('patentDetails', tableDetails);
+        const alignedData = await alignDisplayedData(tableDetails);
+        const chartData = generateVisualizationDataset(alignedData);
+        _dataRef.current = chartData;
+        setData(_dataRef.current          
+            // By Assignee
+            .filter(patentData => {
+                // We remove the baseline sequence of this filter as it is not really an assignee but we need to format data that way
+                return assignees[patentData[KEYS.assignee]] || patentData[KEYS.assignee] === KEYS.baseline;
+            })
+            // By Sequence Range
+            .filter((patentData) => {
+                return sequenceRange.min <= patentData[KEYS.sequencePosition] && patentData[KEYS.sequencePosition] <= sequenceRange.max;
+            })
+            // By Patent Number
+            .filter((patentData) => {
+                return displayedPatents[patentData.patentNumber] || patentData.patentNumber.includes(KEYS.baseline); 
+            })
+            // By Manual Sequence Name
+            .filter((patentData) => {
+                const findSeq = manualSequenceList.find(elem => `${KEYS.baseline}_${elem.name}` === patentData.patentNumber);
+                return findSeq !== undefined ? findSeq.show : true;
+            }));
+    }
+
     const toggleBaseline = (e) => {
         setBaseline(e.target.checked);
     }
@@ -364,6 +406,7 @@ const PatentVisualizer = props => {
                     toggleManualSeq={toggleManualSeq}
                     onAssigneeFilterChange={onAssigneeFilterChange} 
                     onSequenceRangeFilterChange={onSequenceRangeFilterChange}
+                    onClickAlignSequence={onClickAlignSequence}
                     toggleBaseline={toggleBaseline}
                     addManualSequence={addManualSequence}
                     downloadChart={downloadChart}

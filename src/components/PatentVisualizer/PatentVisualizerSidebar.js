@@ -40,7 +40,7 @@ const renderInputNumber = (value, label, onChange) => {
         </div>
     );
 }
-const renderSequenceFilter = (min, max, length, onSequenceRangeFilterChange) => {
+const renderSequenceFilter = (min, max, length, onSequenceRangeFilterChange, onClickAlignSequence) => {
     const marks = {
         0: '0',
         [length]: length,
@@ -51,7 +51,8 @@ const renderSequenceFilter = (min, max, length, onSequenceRangeFilterChange) => 
                 onChange={([ minSlider, maxSlider ]) => onSequenceRangeFilterChange({ min: minSlider, max: maxSlider })} 
             />,
             renderInputNumber(min, StringManager.get('minLabel'), (min) => onSequenceRangeFilterChange({ min, max })),
-            renderInputNumber(max, StringManager.get('maxLabel'), (max) => onSequenceRangeFilterChange({ min, max }))
+            renderInputNumber(max, StringManager.get('maxLabel'), (max) => onSequenceRangeFilterChange({ min, max })),
+            <Button onClick={onClickAlignSequence} style={{ margin: '15px auto', display: 'flex' }}>Align</Button>
         ]
     );
 }
@@ -115,7 +116,7 @@ const renderAddSequence = (addManualSequence, manualSeq, setManualSeq, manualSeq
 }
 
 const PatentVisualizerSidebar = (props) => {
-    const { onSequenceRangeFilterChange, sequenceRange } = props;
+    const { onSequenceRangeFilterChange, sequenceRange, onClickAlignSequence } = props;
     const { min, max, length } = sequenceRange;
     const [siderWidth, setSiderWidth] = useState(300);
     const [manualSeq, setManualSeq] = useState({ seqName: '', seqString: '' });
@@ -151,7 +152,7 @@ const PatentVisualizerSidebar = (props) => {
                     {renderCheckboxList(props.assignees, props.onAssigneeFilterChange, props.colorKeys)}
                 </SubMenu>
                 <SubMenu key="sub2" icon={<UserOutlined />} title={StringManager.get('filterBySequencePosition')}>
-                    {renderSequenceFilter(min, max, length, onSequenceRangeFilterChange)}
+                    {renderSequenceFilter(min, max, length, onSequenceRangeFilterChange, onClickAlignSequence)}
                 </SubMenu>
                 <SubMenu key="sub3" icon={<UserOutlined />} title={'Add Sequence'}>
                     {renderAddSequence(props.addManualSequence, manualSeq, setManualSeq, props.manualSequenceList, props.toggleManualSeq)}
