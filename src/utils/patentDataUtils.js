@@ -1,5 +1,4 @@
 import { API } from 'aws-amplify';
-import { AMINO_ACID_CODE, AMINO_THREE_LETTER_CODE } from './aminoAcidTable';
 
 function getPatentData(proteinId){
     /**
@@ -57,94 +56,15 @@ function savePatentData(data){
 
 async function postAlignSequences(data = []) {
     const url = 'https://wfwm01p2j4.execute-api.us-east-1.amazonaws.com/Prod/align/';
-    // Default options are marked with *
     const response = await fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        // mode: 'cors', // no-cors, *cors, same-origin
-        //   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        //   credentials: 'same-origin', // include, *same-origin, omit
         headers: {
             'Content-Type': 'application/json',
-        // 'Access-Control-Allow-Origin'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
         },
-        //   redirect: 'follow', // manual, *follow, error
-        //   referrerPolicy: 'unsafe-url', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
         body: JSON.stringify(data) // body data type must match "Content-Type" header
     })
     return response.json(); // parses JSON response into native JavaScript objects
 }
-
-
-// return Promise.resolve([
-//     { docId: data[0].docId, seqs: [
-//         {
-//             "seqId": "3",
-//             "claimedResidues": ["3", "4", "10", "11", "20"],
-//             location: "claim",
-//             "value": [
-//                 "Met",
-//                 "Gly",
-//                 "-",
-//                 "-",
-//                 "-",
-//                 "Thr",
-//                 "Val",
-//                 "Ser",
-//                 "Ser",
-//                 "Arg",
-//                 "Arg",
-//                 "-",
-//                 "Ser",
-//                 "Trp",
-//                 "Met",
-//                 "Gly",
-//                 "-",
-//                 "-",
-//                 "-",
-//                 "Thr",
-//                 "Val",
-//                 "Ser",
-//                 "Ser",
-//                 "Arg",
-//                 "Arg",
-//                 "-",
-//                 "Ser",
-//                 "Trp"
-//             ],
-//         },
-//         {
-//             "seqId": "2",
-//             "claimedResidues": ["2", "241", "339", "343"],
-//             location: "claim",
-//             "value": [
-//                 "-",
-//                 "Thr",
-//                 "Gly",
-//                 "Thr",
-//                 "Val",
-//                 "Ser",
-//                 "Ser",
-//                 "-",
-//                 "-",
-//                 "-",
-//                 "-",
-//                 "Arg",
-//                 "Arg",
-//                 "-",
-//                 "Ser",
-//                 "Trp",
-//                 "Trp",
-//                 "Pro",
-//                 "-",
-//                 "Leu",
-//                 "Pro",
-//                 "Leu",
-//                 "Leu"
-//             ] }
-//         ]},
-//     { docId: data[1].docId, seqs: data[1].seqs },
-// ]);
 
 /* 
  * The current heatmap component does not have a simple way to show data the way we want it where we want the full table of sequences from 0 - n and

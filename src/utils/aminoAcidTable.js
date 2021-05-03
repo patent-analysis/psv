@@ -24,7 +24,8 @@ const AMINO_THREE_LETTER_CODE = {
     Trp: 'W',
     Xxx: 'X',
     Tyr: 'Y',
-    Glx: 'Z'
+    Glx: 'Z',
+    '-': '-'
 }
 
 const AMINO_ACID_CODE = {
@@ -53,7 +54,8 @@ const AMINO_ACID_CODE = {
     'W': 'Trp',
     'X': 'Xxx',
     'Y': 'Tyr',
-    'Z': 'Glx'
+    'Z': 'Glx',
+    '-': '-'
 }
 
 export { AMINO_ACID_CODE, AMINO_THREE_LETTER_CODE };
