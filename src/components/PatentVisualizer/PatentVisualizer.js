@@ -8,7 +8,8 @@ import PatentVisualizerSidebar from './PatentVisualizerSidebar';
 import PatentTable from './PatentTable';
 import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
-import { getPatentData, generateVisualizationDataset, savePatentData, sortDataset } from '../../utils/patentDataUtils';
+import { getPatentData, generateVisualizationDataset, savePatentData, sortDataset, mergeSequenceWithResidues, postAlignSequences } from '../../utils/patentDataUtils';
+import { AMINO_ACID_CODE, AMINO_THREE_LETTER_CODE } from '../../utils/aminoAcidTable';
 import { useLocation } from 'react-router-dom';
 import EditModalDialog from '../EditDataModal/EditDataModal'
 import StringManager from '../../utils/StringManager';
@@ -97,6 +98,50 @@ const G2DrawResidues = (details, colors) => {
     });
 }
 
+const alignDisplayedData = async (data) => {
+    const alignedFormat = data.map((patent) => ({ 
+        docId: patent.docId, 
+        seqs: patent.mentionedResidues.map((seqInfo) => ({ 
+            ...seqInfo, 
+            value: seqInfo.value.map((threeLetterAmino) => AMINO_THREE_LETTER_CODE[threeLetterAmino]) 
+        }))
+    }));
+    try {
+        const alignedData = await postAlignSequences(alignedFormat);
+        return data.map((patent, index) => {
+            return {
+                ...patent, 
+                mentionedResidues: alignedData.message[index].seqs
+                    .map((sequence) => ({ 
+                        ...sequence, 
+                        value: sequence.value
+                            .map((singleLetterAmino) => AMINO_ACID_CODE[singleLetterAmino]) 
+                    })) 
+            }
+        });
+    } catch (error) {
+        return data;
+    }
+}
+
+const alignManualSequence = async (data, manualSequence = []) => {
+    const alignedFormat = data.map((patent) => ({ 
+        docId: patent.docId, 
+        seqs: patent.mentionedResidues.map((seqInfo) => ({ 
+            ...seqInfo, 
+            value: seqInfo.value.map((threeLetterAmino) => AMINO_THREE_LETTER_CODE[threeLetterAmino]) 
+        }))
+    }));
+    try {
+        const alignedData = await postAlignSequences(alignedFormat.concat(manualSequence));
+        // We only care about the result of the new manual sequence
+        return alignedData.message[alignedData.message.length - 1];
+    } catch (error) {
+        console.log('Error during alignment', error);
+        return data;
+    }
+}
+
 const PatentVisualizer = props => {
     const location = useLocation();
     const query = new URLSearchParams(location.search);
@@ -111,6 +156,7 @@ const PatentVisualizer = props => {
     let _chartRef;
 
     const _dataRef = useRef([]);
+    const _patentDetailRef = useRef([]);
     const [modalShow, setModalShow] = React.useState(false);
     const [editPatentDetails, setEditPatentDetails] = useState({});
     G2DrawResidues(details, colorKeys);
@@ -118,11 +164,14 @@ const PatentVisualizer = props => {
         (async function () {
             try {
                 const patentData = await getPatentData(proteinName);
+                const structuredPatentData = mergeSequenceWithResidues(patentData);
+                _patentDetailRef.current = structuredPatentData;
+                const alignedPatentData = await alignDisplayedData(structuredPatentData);
                 if(!patentData || patentData.length === 0) {
                     throw Error('no data');
                 }
                 isLoading(false);
-                setPatentData(patentData);
+                setPatentData(alignedPatentData);
             } catch(error) {
                 const titleExtension = proteinName === null ? StringManager.get('proteinNotFound') : proteinName; 
                 Modal.error({
@@ -236,7 +285,7 @@ const PatentVisualizer = props => {
                 if(residueData[KEYS.patentNumber].includes(KEYS.baseline) && showBaseline) {
                     return residueData[KEYS.aminoAcid];
                 } else if(residueData.Claimed && showBaseline) {
-                    return residueData[KEYS.aminoAcid][0];
+                    return AMINO_THREE_LETTER_CODE[residueData[KEYS.aminoAcid]];
                 }
             }
         },
@@ -311,9 +360,21 @@ const PatentVisualizer = props => {
         setModalShow(true);
     }
         
-    const addManualSequence = (sequence = '', name) => {
+    const addManualSequence = async (sequence = '', name) => {
+        isLoading(true);
+        const alignFormattedManualSeq =  {
+            docId: name, 
+            seqs: [{
+                seqId: '0',
+                location: 'manual',
+                claimedResidues: [],
+                value: sequence.split('')
+            }]
+        }
+
+        const alignedData = await alignManualSequence(_patentDetailRef.current, alignFormattedManualSeq);
         // Sequence is passed as a String, we need to format the data to send to the chart
-        const newSequence = sequenceStringToArray(sequence, name);
+        const newSequence = sequenceStringToArray(alignedData.seqs[0].value.join(''), name);
         // Sort data to make sure manual sequences are shown at the bottom of the chart
         const newDataset = sortDataset(data.concat(newSequence));
         setData(newDataset);
@@ -327,7 +388,7 @@ const PatentVisualizer = props => {
         if (!isSeqDefined) {
             setManualSequenceList([...manualSequenceList, { show: true, name }]);
         }
-
+        isLoading(false);
     }
 
     const toggleManualSeq = (seqName, toggle) => {

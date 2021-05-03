@@ -54,6 +54,17 @@ function savePatentData(data){
     return API.put(apiName, path, myInit);
 }
 
+async function postAlignSequences(data = []) {
+    const url = 'https://wfwm01p2j4.execute-api.us-east-1.amazonaws.com/Prod/align/';
+    const response = await fetch(url, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data) // body data type must match "Content-Type" header
+    })
+    return response.json(); // parses JSON response into native JavaScript objects
+}
 
 /* 
  * The current heatmap component does not have a simple way to show data the way we want it where we want the full table of sequences from 0 - n and
@@ -118,6 +129,18 @@ function findSequenceBySeqId(sequenceArray, seqId) {
     return [];
 }
 
+function mergeSequenceWithResidues(patentArray) {
+    const alignedPatentData = JSON.parse(JSON.stringify(patentArray));
+    return alignedPatentData.map((patent) => {
+        return { ...patent, 
+            mentionedResidues: patent.mentionedResidues.map((residues) => {
+                const sequence = findSequenceBySeqId(patent.sequences, residues.seqId);
+                return { ...residues, value: sequence }
+            })
+        }
+    });
+}
+
 function generateVisualizationDataset(patentData) {
     /**
      * The $patentData retrieved from the patents database contains comma-separated
@@ -169,7 +192,9 @@ export {
     getPatentData,
     getProteinList,
     addProteinToList,
+    postAlignSequences,
     generateVisualizationDataset,
+    mergeSequenceWithResidues,
     savePatentData,
     sortDataset
 };
