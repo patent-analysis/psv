@@ -36,7 +36,11 @@ const strings = {
     errorPatentEdit: 'Something went wrong editing patent',
     mentionedResidues: 'Mentioned Residues',
     mentionedResiduesTooltip: 'Residues mentioned outside claims',
-    inventors: 'Inventors'
+    inventors: 'Inventors',
+    renderScrollableChart: 'Render Scrollable Chart',
+    renderFullChart: 'Render Full Sequence Chart',
+    renderScrollableChartTooltip: 'Will re-render chart to be able to scroll and increase its size',
+    renderFullChartTooltip: 'Will re-render chart to fit entire sequence in the screen',
 }
 
 export default Object.freeze(strings);
