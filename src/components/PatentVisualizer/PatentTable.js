@@ -28,7 +28,6 @@ const collapseResidueRanges = (residueArray = [], sequence = []) => {
             } else {
                 const firstCode = sequence.length > previousValue ? AMINO_THREE_LETTER_CODE[sequence[intPreviousValue - 1]] : '';
                 const lastCode = sequence.length > parseInt(previousValue) + count ? AMINO_THREE_LETTER_CODE[sequence[intPreviousValue + count - 1]] : '';
-                console.log(`${sequence[parseInt(previousValue) + count - 1]} ----> ${AMINO_THREE_LETTER_CODE[sequence[intPreviousValue + count - 1]]}`)
                 newArray.push(`${firstCode}${previousValue}-${lastCode}${intPreviousValue + count}`);
             }
             previousValue = residueArray[i];
@@ -40,7 +39,6 @@ const collapseResidueRanges = (residueArray = [], sequence = []) => {
         const intPreviousValue = parseInt(previousValue);
         const firstCode = sequence.length > previousValue ? AMINO_THREE_LETTER_CODE[sequence[intPreviousValue - 1]] : '';
         const lastCode = sequence.length > intPreviousValue + count ? AMINO_THREE_LETTER_CODE[sequence[intPreviousValue + count - 1]] : '';
-        console.log(`${sequence[intPreviousValue + count]} ----> ${AMINO_THREE_LETTER_CODE[sequence[intPreviousValue + count]]}`)
         newArray.push(`${firstCode}${previousValue}-${lastCode}${intPreviousValue + count}`);
     }
     return newArray;

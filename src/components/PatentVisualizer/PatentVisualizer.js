@@ -10,7 +10,7 @@ import { assignColors } from '../../utils/colors';
 import { getUnique } from '../../utils/utils';
 import { getPatentData, generateVisualizationDataset, savePatentData, sortDataset, mergeSequenceWithResidues, postAlignSequences } from '../../utils/patentDataUtils';
 import { AMINO_ACID_CODE, AMINO_THREE_LETTER_CODE } from '../../utils/aminoAcidTable';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import EditModalDialog from '../EditDataModal/EditDataModal'
 import StringManager from '../../utils/StringManager';
 
@@ -30,6 +30,8 @@ const KEYS = {
     seqId: 'seqId'
 }
 Object.freeze(KEYS);
+
+const EXPAND_CHART_QUERY_PARAM = 'expandChart'
 
 const getMaximumSeq = (patentArray) => {
     return patentArray.reduce((max, current) => {
@@ -144,8 +146,10 @@ const alignManualSequence = async (data, manualSequence = []) => {
 
 const PatentVisualizer = props => {
     const location = useLocation();
+    const history = useHistory();
     const query = new URLSearchParams(location.search);
     const proteinName = query.get('proteinName');
+    const shouldExpand = query.get(EXPAND_CHART_QUERY_PARAM) || 'false';
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
@@ -252,7 +256,7 @@ const PatentVisualizer = props => {
     const config = {
         width: 3000,
         height: 600,
-        autoFit: false,
+        autoFit: shouldExpand === 'false',
         data: data,
         xField: KEYS.sequencePosition,
         xAxis: gridStyles,
@@ -397,6 +401,26 @@ const PatentVisualizer = props => {
         });
         setManualSequenceList(newSeqList);
     }
+
+    const onRenderFullChart = () => {
+        if(history.location.search.includes(`${EXPAND_CHART_QUERY_PARAM}=true`)) {
+            const currentUrl = history.location.search;
+            history.push({
+                search: currentUrl.replace(`${EXPAND_CHART_QUERY_PARAM}=true`,`${EXPAND_CHART_QUERY_PARAM}=false`),
+            });
+        } else if(history.location.search.includes(`${EXPAND_CHART_QUERY_PARAM}=false`)) { 
+            const currentUrl = history.location.search;
+            history.push({
+                search: currentUrl.replace(`${EXPAND_CHART_QUERY_PARAM}=false`,`${EXPAND_CHART_QUERY_PARAM}=true`),
+            });
+        } else {
+            history.push({
+                search: `${history.location.search}&${EXPAND_CHART_QUERY_PARAM}=true`,
+            });
+        }
+        window.location.reload();
+    }
+
     const getChartRef = (chartElement) => {
         if(chartElement) {
             _chartRef = chartElement.getChart();
@@ -420,7 +444,7 @@ const PatentVisualizer = props => {
                 }} tip={'Loading...'} 
                 spinning={loading}>
                 </Spin>
-                <PatentVisualizerSidebar assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length} showBaseline={showBaseline}
+                <PatentVisualizerSidebar shouldExpand={shouldExpand === 'true'} assignees={assignees} colorKeys={colorKeys} sequenceRange={sequenceRange} sequenceLength={data.length} showBaseline={showBaseline}
                     manualSequenceList={manualSequenceList}
                     toggleManualSeq={toggleManualSeq}
                     onAssigneeFilterChange={onAssigneeFilterChange} 
@@ -428,6 +452,7 @@ const PatentVisualizer = props => {
                     toggleBaseline={toggleBaseline}
                     addManualSequence={addManualSequence}
                     downloadChart={downloadChart}
+                    onRenderFullChart={onRenderFullChart}
                 />
                 <Layout style={{ padding: '24px', overflow: 'auto' }}>
                     <Heatmap ref={getChartRef} onEvent={onEvent} {...config} />

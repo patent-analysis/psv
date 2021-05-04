@@ -172,6 +172,17 @@ const PatentVisualizerSidebar = (props) => {
                         </Button>
                     </Tooltip>
                 </Menu.Item>
+                <Menu.Item style={{ display: 'flex' }}>
+                    <Tooltip
+                        trigger={['hover']}
+                        title={props.shouldExpand ? StringManager.get('renderFullChartTooltip') : StringManager.get('renderScrollableChartTooltip')}
+                        placement="topLeft"
+                    >
+                        <Button style={{ margin: 'auto' }} onClick={props.onRenderFullChart}>
+                            {props.shouldExpand ? StringManager.get('renderFullChart'): StringManager.get('renderScrollableChart')}
+                        </Button>
+                    </Tooltip>
+                </Menu.Item>
             </Menu>
         </Sider>
     );
