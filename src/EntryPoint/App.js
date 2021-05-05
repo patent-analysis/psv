@@ -9,7 +9,7 @@ const { Content, Footer } = Layout;
 
 function App() {
     return (
-        <Layout className="layout" style={{ height: '100%' }}>
+        <Layout className="layout" style={{ minHeight: '100vh' }}>
             <HeaderMenu />
             <Content style={{ padding: '0 50px' }}>
                 <PageRouter />

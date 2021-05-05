@@ -180,7 +180,7 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
 ];
 
 const PatentTable= ({ patentData, onPatentNumberFilterChange, displayedPatents, onEditPatent }) => {
-    return <Table bordered columns={getColumns(onPatentNumberFilterChange, displayedPatents, onEditPatent)} dataSource={patentData} />
+    return <Table sticky bordered columns={getColumns(onPatentNumberFilterChange, displayedPatents, onEditPatent)} dataSource={patentData} />
 }
 
 export default PatentTable;

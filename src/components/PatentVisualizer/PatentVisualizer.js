@@ -152,13 +152,12 @@ const PatentVisualizer = props => {
     const shouldExpand = query.get(EXPAND_CHART_QUERY_PARAM) || 'false';
     const [data, setData] = useState([]);
     const [colorKeys, setColorKeys] = useState({});
-    const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0 });
+    const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0, patentName: '', seqId: '', aminoAcid: '' });
     const [showBaseline, setBaseline] = useState(false);
     const [tableDetails, setTableDetails] = useState([]);
     const [loading, isLoading] = useState(true);
     const [manualSequenceList, setManualSequenceList] = useState([]);
     let _chartRef;
-
     const _dataRef = useRef([]);
     const _patentDetailRef = useRef([]);
     const [modalShow, setModalShow] = React.useState(false);
@@ -287,7 +286,7 @@ const PatentVisualizer = props => {
             },
             formatter: (residueData) => {
                 if(residueData[KEYS.patentNumber].includes(KEYS.baseline) && showBaseline) {
-                    return residueData[KEYS.aminoAcid];
+                    return AMINO_THREE_LETTER_CODE[residueData[KEYS.aminoAcid]] || residueData[KEYS.aminoAcid];
                 } else if(residueData.Claimed && showBaseline) {
                     return AMINO_THREE_LETTER_CODE[residueData[KEYS.aminoAcid]];
                 }
@@ -300,8 +299,13 @@ const PatentVisualizer = props => {
     const onEvent = (__chart, event) => {
         // If event.data is not available user clicked on empty tile of heatmap
         if (event.type === 'click' && event.data) {
+            const position = parseInt(event.data.data[KEYS.sequencePosition]);
+            setSequenceRange(currentRange => ({ min: position - 20, max: position + 20, length: currentRange.length }));
             setDetails({
                 show: true,
+                aminoAcid: event.data.data[KEYS.aminoAcid],
+                seqId: event.data.data.seqId,
+                patentName: event.data.data.patentName,
                 patentId: event.data.data[KEYS.patentNumber],
                 assignee: event.data.data[KEYS.assignee],
                 seqPosition: event.data.data[KEYS.sequencePosition],
@@ -429,7 +433,7 @@ const PatentVisualizer = props => {
 
     return (
         [
-            <Title level={3}> {`${StringManager.get('resultsFor')} ${proteinName || ''}:`} </Title>,
+            <Title style={{ marginTop: 20, marginBottom: 20 }} level={3}> {`${StringManager.get('resultsFor')} ${proteinName || ''}:`} </Title>,
             <Layout>
                 {modalShow && <EditModalDialog
                     isOpen={modalShow}
@@ -455,19 +459,31 @@ const PatentVisualizer = props => {
                     onRenderFullChart={onRenderFullChart}
                 />
                 <Layout style={{ padding: '24px', overflow: 'auto' }}>
-                    <Heatmap ref={getChartRef} onEvent={onEvent} {...config} />
+                    <Heatmap ref={getChartRef} onEvent={(__chart, event) => onEvent(__chart, event)} {...config} />
                 </Layout>
                 {details.show &&
                     <Sider className="site-layout-background" theme="light" width={200} style={{ padding: '20px' }}>
                         <CloseOutlined className="visualizer__details-sider-icon"
-                            onClick={() => setDetails({ ...details, show: false })}
+                            onClick={() => {
+                                setDetails({ ...details, show: false });
+                            }}
                         />
-                        <div>Patent Name: {details.patentId}</div>
-                        <div>Sequence Index - Name: {details.seqPosition}</div>
-                        <div>Assignee: {details.assignee}</div>
+                        <Title level={5}>Patent Number</Title>
+                        <p>{details.patentId}</p>
+                        <Title level={5}>Patent Name</Title>
+                        <p>{details.patentName}</p>
+                        <Title level={5}>Assignee</Title>
+                        <p>{details.assignee}</p>
+                        <Title level={5}>Residue details</Title>
+                        <p>Position: {details.seqPosition}</p>
+                        <p>SEQ ID: {details.seqId}</p>
+                        <p>Amino acid: {details.aminoAcid}</p>
+                        <p>See patent table for more details</p>
+                        
                     </Sider>
                 }
             </Layout>,
+            <Title style={{ marginTop: 20, marginBottom: 20 }} level={3}>Patent Details Table</Title>,
             <PatentTable patentData={tableDetails} onEditPatent={onEditPatent} onPatentNumberFilterChange={onPatentNumberFilterChange} displayedPatents={displayedPatents} />
         ]
     )

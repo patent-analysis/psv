@@ -75,26 +75,20 @@ async function postAlignSequences(data = []) {
  * 3) One patent should have the entire sequence to make the chart show ALL entries (else it would only show only our data points so { patentId: 2, claimedResidue: 3 }, { patentId: 2, claimedResidue: 7 })
  *    the chart will only show 3 and 7 in the X axis not 1, 2, 3, 4, 5, 6, 7 with only 2 and 7 painted.
  * 
- * WORKAROUND: We add the base sequence as a patent at the bottom of the chart. This way we will have an empty patent with every data point. We leverage this and we will use it to show the amino acid sequence
 */
-
-const amino = ['A', 'R', 'N', 'D', 'G', 'C', 'P', 'S', 'Y', 'I'];
-function getRandomAmino(){
-    return amino[Math.floor(Math.random() * amino.length)];
-}
-
-//TODO: baseline data should be read from a database
-let baseline = [];
-const MAX_SEQ_LENGTH = 692;
-for (let i = 1; i <= MAX_SEQ_LENGTH; i++) {
-    baseline.push({
-        'patentNumber': 'Sequence',
-        'patentAssignees': 'Sequence',
-        'sequencePosition': i.toString(),
-        'Amino Acid': getRandomAmino(),
-        'patentNumberAndSeq': 'Sequence',
-        'Claimed': false,
-    })
+function generateBaseline(sequenceData) {
+    let baseline = [];
+    for (let i = 0; i <= sequenceData.value.length; i++) {
+        baseline.push({
+            'patentNumber': 'Sequence',
+            'patentAssignees': 'Sequence',
+            'sequencePosition': (i + 1).toString(),
+            'Amino Acid': sequenceData.value[i],
+            'patentNumberAndSeq': 'Sequence',
+            'Claimed': false,
+        })
+    }
+    return baseline;
 }
 
 // We require to sort the data in a specific way in order to visualize correctly.
@@ -135,10 +129,22 @@ function mergeSequenceWithResidues(patentArray) {
         return { ...patent, 
             mentionedResidues: patent.mentionedResidues.map((residues) => {
                 const sequence = findSequenceBySeqId(patent.sequences, residues.seqId);
-                return { ...residues, value: sequence }
+                return { ...residues, value: sequence, originalLength: sequence.length }
             })
         }
     });
+}
+
+function getBiggestOriginalSequence(patentData) {
+    let largestSequence = { originalLength: 0, value: [] };
+    patentData.forEach((patentInfo) => {
+        patentInfo.mentionedResidues.forEach((residue) => {
+            if(residue.originalLength > largestSequence.originalLength) {
+                largestSequence = residue;
+            }
+        });
+    });
+    return largestSequence;
 }
 
 function generateVisualizationDataset(patentData) {
@@ -149,11 +155,15 @@ function generateVisualizationDataset(patentData) {
      */
     let visualizationDataset = [];
     let i = 0;
-
+    // We select the largest sequence as the default baseline sequence as it is likely
+    // It is the full protein sequence
+    const defaultBaseline = getBiggestOriginalSequence(patentData);
+    const baseline = generateBaseline(defaultBaseline);
     patentData.forEach((patentInfo) => {
         const assignee = patentInfo['patentAssignees']
         const patentNumber = patentInfo['patentNumber']
         const mentionedResidues = patentInfo['mentionedResidues'];
+        const patentName = patentInfo['patentName'];
         for(let j = 0; j < mentionedResidues.length; j++) {
             const residuesList = mentionedResidues[j].claimedResidues.filter((residue) => residue);
             const residueMap = {}
@@ -162,6 +172,10 @@ function generateVisualizationDataset(patentData) {
             residuesList.forEach((residue) => {
                 residueMap[residue] = true;
             });
+            if(mentionedResidues[j].location !== 'claim') {
+                // We do not want to visualize non claim sequences and residues
+                continue;
+            }
             const sequence = findSequenceBySeqId(patentInfo['sequences'], mentionedResidues[j].seqId);
             // eslint-disable-next-line
             sequence.forEach((aminoAcid, index) => {
@@ -172,11 +186,12 @@ function generateVisualizationDataset(patentData) {
                     const visualizationData = {
                         'patentAssignees': assignee,
                         'patentNumber': patentNumber,
+                        'patentName': patentName,
                         'sequencePosition': sequencePosition.toString(),
-                        'Claimed': (residueMap[sequencePosition.toString()] && mentionedResidues[j].location === 'claim') || false,
+                        'Claimed': residueMap[sequencePosition.toString()] || false,
                         'Amino Acid': aminoAcid,
                         'seqId': mentionedResidues[j].seqId,
-                        'patentNumberAndSeq': `${patentNumber}_SEQID_${mentionedResidues[j].seqId}`
+                        'patentNumberAndSeq': `${patentNumber.substring(0, 2) + patentNumber.substring(patentNumber.length -5, patentNumber.length - 2)}_SEQ_${mentionedResidues[j].seqId}`
                     };
                     visualizationDataset[i] = visualizationData;
                     i++;
@@ -185,7 +200,7 @@ function generateVisualizationDataset(patentData) {
         }
     });
 
-    return sortDataset(visualizationDataset);
+    return sortDataset(visualizationDataset.concat(baseline));
 }
 
 export {
