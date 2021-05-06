@@ -6,7 +6,7 @@ const getRandomColor = () => {
     }
     return color;
 }
-const COLOR_PALETTE = ['#E0A458', '#C04ABC', '#BCB6FF', '#82ABA1', '#C6F91F', '#D4C9C7', '#F4442E', '#FFDBB5'];
+const COLOR_PALETTE = ['#E0A458', '#C04ABC', '#C6F91F', '#F4442E', '#FFDBB5', '#82ABA1', '#BCB6FF', '#D4C9C7'];
 /* 
  * Given an array of elements returns an objects where each element is the key and the value is a hexadecimal color code
 */

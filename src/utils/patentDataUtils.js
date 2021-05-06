@@ -176,7 +176,7 @@ function generateVisualizationDataset(patentData) {
                 // We do not want to visualize non claim sequences and residues
                 continue;
             }
-            const sequence = findSequenceBySeqId(patentInfo['sequences'], mentionedResidues[j].seqId);
+            const sequence = mentionedResidues[j].value;
             // eslint-disable-next-line
             sequence.forEach((aminoAcid, index) => {
                 const sequencePosition = index + 1;
