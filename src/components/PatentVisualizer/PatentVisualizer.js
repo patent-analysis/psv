@@ -254,7 +254,7 @@ const PatentVisualizer = props => {
 
     const config = {
         width: 3000,
-        height: 600,
+        height: 700,
         autoFit: shouldExpand === 'false',
         data: data,
         xField: KEYS.sequencePosition,
