@@ -102,9 +102,15 @@ function sortDataset(dataset) {
         } else if (parseInt(a['sequencePosition']) > parseInt(b['sequencePosition'])) {
             return 1;
         } else {
-            if (a['patentNumber'].includes('Sequence')) {
+            // Sequence vs anything -> Sequence
+            if (a['patentNumber'] === 'Sequence') {
                 return -1;
             }
+            // Manual Sequence vs anything other than Sequence -> Manual Sequence
+            if (a['patentNumber'].includes('Sequence_') && b['patentNumber'] !== 'Sequence') {
+                return -1;
+            }
+
             if(parseInt(a['patentNumber']) < parseInt(b['patentNumber'])) {
                 return -1;
             } else if (parseInt(a['patentNumber']) > parseInt(b['patentNumber'])) {
