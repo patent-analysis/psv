@@ -379,14 +379,13 @@ const PatentVisualizer = props => {
                 value: sequence.split('')
             }]
         }
-
         const alignedData = await alignManualSequence(_patentDetailRef.current, alignFormattedManualSeq);
         // Sequence is passed as a String, we need to format the data to send to the chart
         const newSequence = sequenceStringToArray(alignedData.seqs[0].value.join(''), name);
         // Sort data to make sure manual sequences are shown at the bottom of the chart
         const newDataset = sortDataset(data.concat(newSequence));
         setData(newDataset);
-        _dataRef.current = newDataset;
+        _dataRef.current = sortDataset(_dataRef.current.concat(newSequence));
         // Make sure the slider updates to the maximum length if this sequence is the largest
         if (newSequence.length > sequenceRange.length) {
             setSequenceRange({ ...sequenceRange, length: newSequence.length });
