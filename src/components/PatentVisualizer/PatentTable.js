@@ -1,6 +1,6 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { Table, Modal, Checkbox, Button, Tooltip, Typography } from 'antd';
+import { Table, Modal, Checkbox, Button, Tooltip, Typography, List } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import StringManager from '../../utils/StringManager';
 import { AMINO_THREE_LETTER_CODE } from '../../utils/aminoAcidTable';
@@ -131,8 +131,26 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
                         <div key={`${mention.seqId}_${index}`}>
                             <Title level={5}>SEQ ID: {mention.seqId}</Title>
                             <p>{collapseResidueRanges(mention.claimedResidues, mention.value).filter((residue) => residue).join(', ')}</p>
+                            { mention.statements && mention.statements.length > 0 && 
+                                <Button type="link" style={{ padding: 0 }} onClick={() => {
+                                    Modal.info({
+                                        title: `Epitope Mentions: ${record.patentNumber}`,
+                                        content: (    
+                                            <List
+                                                dataSource={mention.statements}
+                                                renderItem={item => (
+                                                    <List.Item>
+                                                        {item}
+                                                    </List.Item>
+                                                )}
+                                            />)
+                                    });
+                                }}>
+                                    See mentions
+                                </Button>
+                            }
                         </div>
-                    )
+                    );
                 }
                 return null;
             })
@@ -150,8 +168,26 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
                         <div key={`${mention.seqId}_${index}`}>
                             <Title level={5}>SEQ ID: {mention.seqId}</Title>
                             <p>{collapseResidueRanges(mention.claimedResidues, mention.value).filter((residue) => residue).join(', ')}</p>
+                            { mention.statements && mention.statements.length > 0 && 
+                                <Button type="link" style={{ padding: 0 }} onClick={() => {
+                                    Modal.info({
+                                        title: `Epitopes Claimed: ${record.patentNumber}`,
+                                        content: (    
+                                            <List
+                                                dataSource={mention.statements}
+                                                renderItem={item => (
+                                                    <List.Item>
+                                                        {item}
+                                                    </List.Item>
+                                                )}
+                                            />)
+                                    });
+                                }}>
+                                    See claims extracted
+                                </Button>
+                            }
                         </div>
-                    )
+                    );
                 }
                 return null;
             })

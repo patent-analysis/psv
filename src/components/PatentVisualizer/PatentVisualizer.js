@@ -345,7 +345,7 @@ const PatentVisualizer = props => {
     }
 
     const patentEditSubmit = (modifiedPatentDetails) => {
-        let pat = tableDetails.find(p => p.patentNumber === editPatentDetails.patentNumber);
+        let pat = _patentDetailRef.current.find(p => p.patentNumber === editPatentDetails.patentNumber);
         for (const property in modifiedPatentDetails) {
             pat[property] = modifiedPatentDetails[property];
         }
@@ -363,7 +363,7 @@ const PatentVisualizer = props => {
     }
 
     const onEditPatent = (patentNumber) => {
-        let pat = tableDetails.find(p => p.patentNumber === patentNumber);
+        let pat = _patentDetailRef.current.find(p => p.patentNumber === patentNumber);
         setEditPatentDetails(pat);        
         setModalShow(true);
     }
