@@ -154,7 +154,6 @@ const PatentVisualizer = props => {
     const [colorKeys, setColorKeys] = useState({});
     const [details, setDetails] = useState({ show: false, patentId: 0, seqPosition: 0, patentName: '', seqId: '', aminoAcid: '' });
     const [showBaseline, setBaseline] = useState(false);
-    const [tableDetails, setTableDetails] = useState([]);
     const [loading, isLoading] = useState(true);
     const [manualSequenceList, setManualSequenceList] = useState([]);
     let _chartRef;
@@ -219,7 +218,6 @@ const PatentVisualizer = props => {
         const patentNumbers = patentData.reduce((prev, current) => {
             return { ...prev, [current.patentNumber]: true }
         }, {})
-        setTableDetails(patentData);
         setDisplayedPatents(patentNumbers);
         // Generate individual data points for the heat map based on the patent data
         const response = generateVisualizationDataset(patentData)
@@ -483,7 +481,7 @@ const PatentVisualizer = props => {
                 }
             </Layout>,
             <Title style={{ marginTop: 20, marginBottom: 20 }} level={3}>Patent Details Table</Title>,
-            <PatentTable patentData={tableDetails} onEditPatent={onEditPatent} onPatentNumberFilterChange={onPatentNumberFilterChange} displayedPatents={displayedPatents} />
+            <PatentTable patentData={_patentDetailRef.current} onEditPatent={onEditPatent} onPatentNumberFilterChange={onPatentNumberFilterChange} displayedPatents={displayedPatents} />
         ]
     )
 };
