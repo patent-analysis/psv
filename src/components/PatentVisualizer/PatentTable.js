@@ -131,24 +131,22 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
                         <div key={`${mention.seqId}_${index}`}>
                             <Title level={5}>SEQ ID: {mention.seqId}</Title>
                             <p>{collapseResidueRanges(mention.claimedResidues, mention.value).filter((residue) => residue).join(', ')}</p>
-                            { mention.statements && mention.statements.length > 0 && 
-                                <Button type="link" style={{ padding: 0 }} onClick={() => {
-                                    Modal.info({
-                                        title: `Epitope Mentions: ${record.patentNumber}`,
-                                        content: (    
-                                            <List
-                                                dataSource={mention.statements}
-                                                renderItem={item => (
-                                                    <List.Item>
-                                                        {item}
-                                                    </List.Item>
-                                                )}
-                                            />)
-                                    });
-                                }}>
-                                    See mentions
-                                </Button>
-                            }
+                            <Button type="link" style={{ padding: 0 }} onClick={() => {
+                                Modal.info({
+                                    title: `Epitope Mentions: ${record.patentNumber}`,
+                                    content: (    
+                                        <List
+                                            dataSource={mention.statements || []}
+                                            renderItem={item => (
+                                                <List.Item>
+                                                    {item}
+                                                </List.Item>
+                                            )}
+                                        />)
+                                });
+                            }}>
+                                See mentions
+                            </Button>
                         </div>
                     );
                 }
@@ -168,24 +166,22 @@ const getColumns = (toggleShow, displayedPatents, onEditPatent) => [
                         <div key={`${mention.seqId}_${index}`}>
                             <Title level={5}>SEQ ID: {mention.seqId}</Title>
                             <p>{collapseResidueRanges(mention.claimedResidues, mention.value).filter((residue) => residue).join(', ')}</p>
-                            { mention.statements && mention.statements.length > 0 && 
-                                <Button type="link" style={{ padding: 0 }} onClick={() => {
-                                    Modal.info({
-                                        title: `Epitopes Claimed: ${record.patentNumber}`,
-                                        content: (    
-                                            <List
-                                                dataSource={mention.statements}
-                                                renderItem={item => (
-                                                    <List.Item>
-                                                        {item}
-                                                    </List.Item>
-                                                )}
-                                            />)
-                                    });
-                                }}>
-                                    See claims extracted
-                                </Button>
-                            }
+                            <Button type="link" style={{ padding: 0 }} onClick={() => {
+                                Modal.info({
+                                    title: `Epitopes Claimed: ${record.patentNumber}`,
+                                    content: (    
+                                        <List
+                                            dataSource={mention.statements || []}
+                                            renderItem={item => (
+                                                <List.Item>
+                                                    {item}
+                                                </List.Item>
+                                            )}
+                                        />)
+                                });
+                            }}>
+                                See claims extracted
+                            </Button>
                         </div>
                     );
                 }
