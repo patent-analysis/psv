@@ -4,6 +4,9 @@ import { getProteinList, addProteinToList } from '../../utils/patentDataUtils';
 import awsExports from '../.././aws-exports';
 import { Spin } from 'antd';
 import './PatentUpload.css';
+import { S3 } from 'aws-sdk';
+import axios from "axios";
+
 
 class PatentUpload extends Component {
     // Initialize state
@@ -18,7 +21,7 @@ class PatentUpload extends Component {
     componentDidMount() {
         getProteinList()
             .then((proteinList) => {
-                this.setState({ ...this.state, inputOptions: proteinList})
+                this.setState({ ...this.state, inputOptions: proteinList })
             })
     }
     uploadPatent = () => {
@@ -36,28 +39,59 @@ class PatentUpload extends Component {
         }
         else {
             const proteinName = document.getElementById('protein').value;
+            
+
+
+            const signerUrl = "https://vy7hhgy6ef.execute-api.us-east-1.amazonaws.com/uploads";
+
+
+
+
             /* If the input passes, iterate through all the files the user uploads
                 to the S3 bucket in a folder named public and then the protein name the user input
                 ex. s3bucket/public/PCSK9/1234.pdf */
             this.setState({ loading: true });
             Promise.all(Array.from(input.files).map((file) => {
-                // IMPORTANT: We use the path from S3 to trigger the text mining process in ta repo
-                var uploadResult = Storage.put(`${proteinName.toUpperCase()}/${file.name}`,
-                    file,
-                    {
-                        bucket: 'psv-document-storage',
-                        customPrefix: {
-                            public: ''
-                        }
+                
+                const response = await axios({
+                    method: 'POST',
+                    url: signerUrl,
+                    data: {fileName: file.name, folderName: proteinName}
+                  });
+
+                  console.log("upload url response:", response );
+                
+                // const uploadResponse = await axios({
+                //     method: 'PUT',
+                //     url: response.uploadUrl,
+                //     data: file
+                //   });
+                
+                  
+
+                const fileUploadUrl = "https://yxylni4wr7.execute-api.us-east-1.amazonaws.com/Prod/upload?fileName=" + file.name + "&folderName=" + proteinName;
+
+
+                axios({
+                    // method: "POST",
+                    // url: fileUploadUrl,
+                    // data: file,
+                    // headers: { "Content-Type": "application/pdf" }
+                    method: 'PUT',
+                    url: response.uploadUrl,
+                    data: file
+
+                }).then(res => {
+                    console.log(res);
+                    this.setState({
+                        uploadSuccess: "File upload successful",
+                        error: undefined
                     });
-                return uploadResult;
-            }))
-                .then(() => {
-                    return addProteinToList({ 
+                }).then(() => {
+                    return addProteinToList({
                         proteinId: proteinName.toUpperCase()
                     });
-                })
-                .then(() => {
+                }).then(() => {
                     this.upload = {
                         bucket: awsExports.aws_user_files_s3_bucket,
                         region: awsExports.aws_user_files_s3_bucket_region,
@@ -66,23 +100,22 @@ class PatentUpload extends Component {
                     this.setState({ response: 'Success uploading file!' });
                     alert('Success Uploading File! ');
                     window.location.reload(true);
-                })
-                .catch((err) => this.setState({ response: `Error uploading file: ${err}` }))
-                .finally(() => {
-                    this.setState({ loading: false });
-                });
+                }).catch((err) => this.setState({ response: `Error uploading file: ${err}` }
+                )).finally(() => {this.setState({ loading: false })})
+            }));
         }
-    };
+    };   
+
 
     // Function to get the names of all the files the user uploads and display them when called
     readList = () => {
         let input = this.file;
         let output = this.fileList;
         let children = '';
-        for (var i =0; i < input.files.length; i++) {
+        for (var i = 0; i < input.files.length; i++) {
             children += '<li>' + input.files.item(i).name + '<li>';
         }
-        output.innerHTML = '<ul style="list-style-type:none;">'+children+'</ul>';
+        output.innerHTML = '<ul style="list-style-type:none;">' + children + '</ul>';
     };
 
     render() {
@@ -92,7 +125,7 @@ class PatentUpload extends Component {
         return (
             <div className="App">
                 <h2>Please Upload Patents</h2>
-                <label className ="proteinLabel" for="proteinLabel">Protein Name: </label>
+                <label className="proteinLabel" for="proteinLabel">Protein Name: </label>
                 <input
                     className="proteinInput"
                     type="text"
@@ -103,7 +136,7 @@ class PatentUpload extends Component {
                 />
 
                 {/* List of proteins to be in the drop down */}
-                <datalist id = "listProteins">
+                <datalist id="listProteins">
                     {optionElements}
                 </datalist>
 
@@ -133,8 +166,8 @@ class PatentUpload extends Component {
                     <label className="toUploadLabel" for="toUploadLabel">Patents to be Upload: </label>
                     <div className="fileList" id="fileList" ref={ref => (this.fileList = ref)}></div>
                 </div>
-                
-                {!this.state.loading ? <button className="uploadButton" onClick={this.uploadPatent}> Upload Files </button> : <Spin /> }
+
+                {!this.state.loading ? <button className="uploadButton" onClick={this.uploadPatent}> Upload Files </button> : <Spin />}
                 {!!this.state.response && <div>{this.state.response}</div>}
             </div>
         );
